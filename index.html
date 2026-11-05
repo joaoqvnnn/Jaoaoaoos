@@ -7,25 +7,31 @@
     <style>
         /* ===== RESET E VARIÁVEIS ===== */
         :root {
-            --bg-color: #0b0b0b;
-            --surface: #1c1c1e;
-            --surface-light: #2c2c2e;
-            --primary: #f2c94c;
-            --text-main: #ffffff;
-            --text-muted: #8e8e93;
-            --danger: #ff453a;
-            --success: #34c759;
-            --border-radius: 18px;
+            --bg: #050505;
+            --surface: #121214;
+            --surface-light: #1e1e22;
+            --primary: #FFCC00; /* Amarelo Ouro */
+            --primary-hover: #e6b800;
+            --text: #FFFFFF;
+            --text-muted: #88888D;
+            --danger: #FF453A;
+            --success: #30D158;
+            --border: rgba(255,255,255,0.08);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font);
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -36,226 +42,321 @@
         /* ===== HEADER ===== */
         .header {
             display: flex; align-items: center; padding: 16px 20px;
-            background-color: var(--bg-color);
-            border-bottom: 1px solid var(--surface);
+            background: rgba(5,5,5,0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
             flex-shrink: 0; z-index: 10;
         }
         .close-btn {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255,255,255,0.08); border: none;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--surface-light); border: none;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: #fff; font-size: 18px;
+            cursor: pointer; color: var(--text); font-size: 14px;
+            transition: background 0.2s;
         }
-        .header .title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; }
+        .header .title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; letter-spacing: 0.5px;}
         .bank-logo { font-weight: 800; color: var(--primary); }
 
         /* ===== ÁREA DO CHAT ===== */
         .chat-container {
-            flex: 1; padding: 20px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 12px;
+            flex: 1; padding: 24px 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 16px;
             scrollbar-width: none;
+            scroll-behavior: smooth;
         }
         .chat-container::-webkit-scrollbar { display: none; }
 
+        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+        .message-wrapper.bot { align-self: flex-start; }
+        .message-wrapper.user { align-self: flex-end; align-items: flex-end; }
+
+        .bot-avatar {
+            width: 28px; height: 28px; border-radius: 50%; background: var(--surface-light);
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+            margin-bottom: 6px;
+        }
+
         .message {
-            max-width: 85%; padding: 14px 18px;
-            border-radius: var(--border-radius); font-size: 15px;
-            line-height: 1.4; animation: fadeIn 0.3s ease;
+            padding: 14px 18px;
+            border-radius: var(--radius-lg);
+            font-size: 15px; line-height: 1.45;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             word-wrap: break-word;
         }
         .message.bot {
-            background-color: var(--surface); align-self: flex-start;
-            border-bottom-left-radius: 4px; color: var(--text-main);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
         }
         .message.user {
-            background-color: var(--primary); color: #000;
-            align-self: flex-end; border-bottom-right-radius: 4px;
+            background: var(--primary); color: #000;
+            border-bottom-right-radius: 4px;
             font-weight: 500;
         }
-        .message .bot-name {
-            font-size: 12px; color: var(--text-muted);
-            margin-bottom: 4px; display: block;
-        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ===== BOTÕES DE OPÇÃO RÁPIDA (QUICK REPLY) ===== */
-        .quick-replies {
-            display: flex; flex-direction: column; gap: 8px;
-            margin-top: 4px; align-self: flex-start; max-width: 85%;
-            animation: fadeIn 0.3s ease;
-        }
-        .quick-replies button {
-            background: var(--surface-light); border: 1px solid #3a3a3c;
-            color: #fff; padding: 12px 16px; border-radius: var(--border-radius);
-            font-size: 14px; text-align: left; cursor: pointer;
-            transition: background 0.2s, border 0.2s;
-        }
-        .quick-replies button:hover { background: #3a3a3c; border-color: var(--primary); }
-
-        /* ===== COMPONENTES ESPECIAIS NO CHAT ===== */
-        /* Seleção de País */
-        .chat-select {
-            background: var(--surface-light); color: #fff; border: 1px solid #3a3a3c;
-            padding: 12px 16px; border-radius: var(--border-radius); font-size: 15px;
-            width: 100%; margin-top: 8px; outline: none; cursor: pointer;
-        }
-        
-        /* Upload de Documento */
-        .upload-widget {
-            background: var(--surface); border: 1px dashed var(--text-muted);
-            border-radius: var(--border-radius); padding: 20px; text-align: center;
-            margin-top: 8px; cursor: pointer; transition: border 0.2s;
-        }
-        .upload-widget:hover { border-color: var(--primary); }
-        .doc-preview-box {
-            display: none; margin-top: 8px; text-align: center;
-        }
-        .doc-preview-box.active { display: block; }
-        .img-blur {
-            width: 100%; height: 150px; border-radius: 12px;
-            object-fit: cover; filter: blur(12px); transition: filter 0.3s ease;
-            background: #333;
-        }
-        .doc-actions { display: flex; gap: 8px; margin-top: 12px; }
-        .doc-actions button { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
-        .btn-edit { background: var(--surface-light); color: #fff; }
-        .btn-confirm { background: var(--primary); color: #000; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ===== ÁREA DE INPUT ===== */
         .input-area {
-            padding: 16px 20px 24px; background-color: var(--bg-color);
-            border-top: 1px solid var(--surface); display: flex; gap: 12px;
-            flex-shrink: 0; align-items: center;
+            padding: 12px 20px 24px; background: var(--bg);
+            border-top: 1px solid var(--border); display: flex; gap: 12px;
+            flex-shrink: 0; align-items: center; z-index: 10;
         }
+        .input-wrapper {
+            flex: 1; display: flex; align-items: center;
+            background: var(--surface); border: 1px solid var(--surface-light);
+            border-radius: 30px; padding: 4px 16px;
+            transition: border 0.2s;
+        }
+        .input-wrapper:focus-within { border-color: var(--primary); }
         .input-area input {
-            flex: 1; background: var(--surface); border: 1px solid var(--surface-light);
-            border-radius: 30px; padding: 16px 20px; font-size: 16px; color: #fff;
-            outline: none; transition: border 0.2s;
+            flex: 1; background: transparent; border: none;
+            padding: 14px 0; font-size: 16px; color: var(--text);
+            outline: none;
         }
-        .input-area input:focus { border-color: var(--primary); }
-        .input-area input::placeholder { color: #636366; }
+        .input-area input::placeholder { color: var(--text-muted); }
         .input-area button {
-            width: 54px; height: 54px; border-radius: 50%; background-color: var(--primary);
+            width: 48px; height: 48px; border-radius: 50%; background-color: var(--primary);
             border: none; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: #000; font-size: 20px; transition: transform 0.1s, opacity 0.2s;
+            cursor: pointer; color: #000; transition: transform 0.1s, opacity 0.2s;
             flex-shrink: 0;
         }
-        .input-area button:active { transform: scale(0.95); }
-        .input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .input-area button:active { transform: scale(0.92); }
+        .input-area button:disabled { background: var(--surface-light); color: var(--text-muted); cursor: not-allowed; }
 
-        /* ===== TYPING INDICATOR ===== */
-        .typing-indicator {
+        /* Botão de olho para senha */
+        .eye-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 8px; }
+
+        /* ===== DIGITANDO... ===== */
+        .typing {
             display: none; align-self: flex-start; background: var(--surface);
-            padding: 14px 18px; border-radius: var(--border-radius);
-            border-bottom-left-radius: 4px; gap: 4px;
+            padding: 16px 20px; border-radius: var(--radius-lg); border-bottom-left-radius: 4px;
+            gap: 4px; border: 1px solid var(--border);
         }
-        .typing-indicator.active { display: flex; }
-        .typing-indicator span {
-            width: 6px; height: 6px; background: var(--text-muted);
-            border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;
+        .typing.active { display: flex; }
+        .typing span {
+            width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        .typing span:nth-child(1) { animation-delay: -0.32s; }
+        .typing span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* ===== SUCESSO ===== */
+        /* ===== BOTTOM SHEET (GAVETA DESLIZANTE) ===== */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 90;
+        }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--surface); border-radius: 24px 24px 0 0;
+            padding: 24px 20px 40px; z-index: 100;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh; display: flex; flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+        .bottom-sheet.active { transform: translateY(0); }
+        
+        .sheet-handle {
+            width: 40px; height: 4px; background: var(--surface-light);
+            border-radius: 4px; margin: 0 auto 20px;
+        }
+        .sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; text-align: center; }
+        
+        .search-bar {
+            background: var(--surface-light); border: 1px solid var(--border);
+            border-radius: 12px; padding: 12px 16px; color: var(--text);
+            width: 100%; font-size: 16px; margin-bottom: 16px; outline: none;
+        }
+        
+        .list-container {
+            overflow-y: auto; flex: 1; scrollbar-width: none;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+        
+        .list-item {
+            padding: 16px; background: var(--surface-light); border-radius: 12px;
+            cursor: pointer; transition: background 0.2s; font-size: 15px;
+        }
+        .list-item:hover { background: #2a2a2e; }
+
+        /* ===== UPLOAD DE DOCUMENTO E SELFIE ===== */
+        .camera-area {
+            background: var(--surface); border: 2px dashed var(--surface-light);
+            border-radius: var(--radius-md); padding: 30px; text-align: center;
+            cursor: pointer; margin-bottom: 16px; position: relative; overflow: hidden;
+        }
+        .camera-area:hover { border-color: var(--primary); }
+        .camera-area input[type="file"] { display: none; }
+        
+        .preview-container { display: none; margin-bottom: 16px; text-align: center; }
+        .preview-container.active { display: block; }
+        .img-preview {
+            width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md);
+            filter: blur(15px); transition: filter 0.3s ease; border: 1px solid var(--surface-light);
+        }
+        
+        /* Scanner Facial */
+        .face-scanner {
+            width: 240px; height: 240px; border-radius: 50%;
+            border: 2px solid var(--primary); margin: 20px auto;
+            position: relative; overflow: hidden; background: #1a1a1a;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .face-scanner::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary); box-shadow: 0 0 15px var(--primary);
+            animation: scanLine 2s infinite linear;
+        }
+        @keyframes scanLine { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        .face-scanner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+
+        /* ===== TECLADO CUSTOMIZADO (PIN) ===== */
+        .pin-display { display: flex; justify-content: center; gap: 16px; margin: 30px 0; }
+        .pin-dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--surface-light); transition: background 0.2s, transform 0.1s;
+        }
+        .pin-dot.filled { background: var(--primary); transform: scale(1.2); }
+        
+        .keypad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+            margin: 0 auto; max-width: 300px;
+        }
+        .key {
+            background: var(--surface-light); color: var(--text); border: none;
+            border-radius: 50%; width: 70px; height: 70px; margin: 0 auto;
+            font-size: 24px; font-weight: 500; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.1s;
+        }
+        .key:active { background: #3a3a3e; }
+        .key.del { background: transparent; font-size: 18px; }
+
+        /* ===== TELA DE SUCESSO ===== */
         .success-screen {
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; text-align: center; padding: 40px 20px;
-            height: 100%; animation: fadeIn 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 200;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
         }
-        .success-screen.active { display: flex; }
-        .success-icon { font-size: 64px; margin-bottom: 16px; }
-        .receipt-box {
-            background: var(--surface); border-radius: 16px;
-            padding: 20px; width: 100%; max-width: 350px;
-            margin-bottom: 24px; text-align: left;
+        .success-screen.active { display: flex; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .success-icon { font-size: 72px; margin-bottom: 16px; }
+        .receipt {
+            background: var(--surface); border-radius: 20px; padding: 24px;
+            width: 100%; max-width: 340px; margin: 24px 0; text-align: left;
+            border: 1px solid var(--border);
         }
-        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
-        .receipt-row:last-child { margin-bottom: 0; }
-        .receipt-row span:first-child { color: var(--text-muted); }
-        .receipt-row span:last-child { font-weight: 600; }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 15px; }
+        .receipt-item:last-child { margin-bottom: 0; }
+        .receipt-item span:first-child { color: var(--text-muted); }
+        .receipt-item span:last-child { font-weight: 600; }
+
+        /* Botão Principal */
+        .btn-main {
+            background: var(--primary); color: #000; border: none;
+            padding: 16px 32px; border-radius: 30px; font-size: 16px; font-weight: 700;
+            width: 100%; max-width: 340px; cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-main:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
     <div class="header">
-        <button class="close-btn" onclick="if(confirm('Deseja cancelar a abertura de conta?')) location.reload()">✕</button>
+        <button class="close-btn" onclick="if(confirm('Cancelar abertura de conta?')) location.reload()">✕</button>
         <div class="title"><span class="bank-logo">MeuBanco</span> Digital</div>
     </div>
 
     <!-- CHAT -->
     <div class="chat-container" id="chatContainer">
-        <div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>
+        <div class="typing" id="typingIndicator"><span></span><span></span><span></span></div>
     </div>
 
     <!-- INPUT -->
     <div class="input-area" id="inputArea">
-        <input type="text" id="chatInput" placeholder="Digite sua resposta..." autocomplete="off" disabled>
+        <div class="input-wrapper">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem..." autocomplete="off" disabled>
+            <button class="eye-btn" id="eyeBtn" style="display:none;" onclick="togglePassword()">👁️</button>
+        </div>
         <button id="sendBtn" disabled onclick="processInput()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="black" stroke-width="2" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="black" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
         </button>
     </div>
 
-    <!-- TELA DE SUCESSO (Oculta no início) -->
-    <div class="success-screen" id="successScreen">
-        <div class="success-icon">🎉</div>
-        <h2 style="margin-bottom: 8px;">Conta Aprovada!</h2>
-        <p style="color: var(--text-muted); margin-bottom: 24px;">Bem-vindo ao MeuBanco. Sua conta já está ativa.</p>
-        
-        <div class="receipt-box">
-            <div class="receipt-row"><span>Titular</span><span id="resNome">-</span></div>
-            <div class="receipt-row"><span>Agência</span><span>0001</span></div>
-            <div class="receipt-row"><span>Conta</span><span id="resConta">-</span></div>
-            <div class="receipt-row"><span>Tipo</span><span id="resTipo">-</span></div>
-            <div class="receipt-row"><span>Data de Abertura</span><span id="resData">-</span></div>
-            <div class="receipt-row"><span>Status</span><span style="color: var(--success);">Ativa</span></div>
-        </div>
+    <!-- OVERLAY (Fundo Escuro) -->
+    <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 
-        <button style="background:var(--primary); color:#000; border:none; padding:16px 32px; border-radius:30px; font-size:16px; font-weight:bold; cursor:pointer; width:100%; max-width:350px;" onclick="alert('Acessando menu principal...')">Acessar Menu Principal</button>
+    <!-- BOTTOM SHEET (Gaveta Genérica) -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title" id="sheetTitle">Selecione</div>
+        <input type="text" class="search-bar" id="sheetSearch" placeholder="Buscar..." oninput="filterList()">
+        <div class="list-container" id="sheetList"></div>
+        <div id="sheetCustomContent"></div>
+    </div>
+
+    <!-- TELA DE SUCESSO -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">✨</div>
+        <h2 style="font-size: 24px; margin-bottom: 8px;">Conta Aprovada</h2>
+        <p style="color: var(--text-muted); font-size: 15px;">Bem-vindo ao futuro dos seus negócios.</p>
+        
+        <div class="receipt">
+            <div class="receipt-item"><span>Titular</span><span id="resNome">-</span></div>
+            <div class="receipt-item"><span>Agência</span><span>0001</span></div>
+            <div class="receipt-item"><span>Conta</span><span id="resConta">-</span></div>
+            <div class="receipt-item"><span>Tipo</span><span id="resTipo">-</span></div>
+            <div class="receipt-item"><span>Data</span><span id="resData">-</span></div>
+            <div class="receipt-item"><span>Status</span><span style="color: var(--success);">Ativa</span></div>
+        </div>
+        <button class="btn-main" onclick="alert('Entrando no app...')">Acessar Conta</button>
     </div>
 
     <script>
         // ============================================================
-        // 1. ESTADO E VARIÁVEIS
+        // ESTADO GLOBAL
         // ============================================================
         const state = {
             step: 0,
-            tipoConta: '',
+            tipo: '',
             pais: 'Brasil',
             docTipo: 'CPF',
             docValor: '',
             nomeReal: '',
-            nomeMascarado: '',
-            nomeCorrigido: '',
+            nomeExibicao: '',
             dataNasc: '',
-            nomeMae: '',
             email: '',
             telefone: '',
             profissao: '',
-            empresa: '',
             renda: '',
-            docFotoConfirmada: false,
             cep: '',
-            rua: '',
-            bairro: '',
-            cidade: '',
-            uf: '',
             numero: '',
-            complemento: '',
             senha: '',
-            pin: ''
+            pin: '',
+            pinBuffer: ''
         };
 
         const chatContainer = document.getElementById('chatContainer');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         const typingIndicator = document.getElementById('typingIndicator');
-        const inputArea = document.getElementById('inputArea');
+        const eyeBtn = document.getElementById('eyeBtn');
+        const bottomSheet = document.getElementById('bottomSheet');
+        const overlay = document.getElementById('overlay');
+        const sheetTitle = document.getElementById('sheetTitle');
+        const sheetSearch = document.getElementById('sheetSearch');
+        const sheetList = document.getElementById('sheetList');
+        const sheetCustomContent = document.getElementById('sheetCustomContent');
 
-        // 7 Países e seus respectivos documentos
+        // Dados
         const countries = {
             'Brasil': { doc: 'CPF', mask: 'cpf', placeholder: '000.000.000-00' },
             'Estados Unidos': { doc: 'SSN', mask: 'text', placeholder: '000-00-0000' },
@@ -266,47 +367,39 @@
             'Canadá': { doc: 'SIN', mask: 'text', placeholder: '000-000-000' }
         };
 
-        // +100 Profissões
         const profissoes = [
             "Advogado", "Engenheiro Civil", "Médico", "Enfermeiro", "Professor", "Dentista", "Arquiteto", "Contador", 
-            "Analista de Sistemas", "Desenvolvedor de Software", "Designer Gráfico", "Administrador", "Psicólogo", "Fisioterapeuta",
-            "Nutricionista", "Farmacêutico", "Veterinário", "Jornalista", "Publicitário", "Relações Públicas", "Economista",
-            "Piloto", "Comissário de Bordo", "Policial", "Bombeiro", "Militar", "Juiz", "Promotor", "Defensor Público",
-            "Mecânico", "Eletricista", "Encanador", "Pedreiro", "Carpinteiro", "Pintor", "Motorista", "Entregador",
-            "Vendedor", "Corretor de Imóveis", "Corretor de Seguros", "Gerente de Vendas", "Atendente", "Recepcionista",
-            "Secretária", "Auxiliar Administrativo", "Auxiliar de Serviços Gerais", "Faxineiro", "Cozinheiro", "Garçom",
-            "Barbeiro", "Cabeleireiro", "Esteticista", "Manicure", "Costureira", "Fotógrafo", "Cinegrafista", "Editor de Vídeo",
-            "Ator", "Músico", "Dançarino", "Escritor", "Tradutor", "Bibliotecário", "Historiador", "Sociólogo", "Filósofo",
-            "Biólogo", "Químico", "Físico", "Matemático", "Estatístico", "Geólogo", "Geógrafo", "Astrônomo", "Agrônomo",
-            "Zootecnista", "Pecuarista", "Agricultor", "Pescador", "Minerador", "Gastrônomo", "Confeiteiro", "Padeiro",
-            "Açougueiro", "Operador de Máquinas", "Soldador", "Torneiro Mecânico", "Técnico em Informática", "Técnico em Enfermagem",
-            "Técnico em Segurança do Trabalho", "Despachante", "Bancário", "Analista Financeiro", "Auditor", "Atuário",
-            "Personal Trainer", "Educador Físico", "Fonoaudiólogo", "Terapeuta Ocupacional", "Assistente Social", "Antropólogo",
-            "Arqueólogo", "Paleontólogo", "Oceanógrafo", "Meteorologista", "Cientista de Dados", "UX/UI Designer",
-            "Product Manager", "Scrum Master", "Analista de RH", "Recrutador", "Zelador", "Porteiro", "Segurança", "Vigilante",
-            "Empresário", "Autônomo", "Freelancer", "Estudante", "Aposentado", "Do Lar", "Desempregado", "Outro"
+            "Analista de Sistemas", "Desenvolvedor", "Designer", "Administrador", "Psicólogo", "Fisioterapeuta",
+            "Nutricionista", "Farmacêutico", "Veterinário", "Jornalista", "Publicitário", "Economista", "Piloto",
+            "Policial", "Bombeiro", "Militar", "Juiz", "Mecânico", "Eletricista", "Encanador", "Pedreiro", "Motorista",
+            "Entregador", "Vendedor", "Corretor", "Gerente", "Atendente", "Recepcionista", "Secretária", "Cozinheiro",
+            "Garçom", "Barbeiro", "Cabeleireiro", "Esteticista", "Fotógrafo", "Músico", "Escritor", "Tradutor",
+            "Biólogo", "Químico", "Físico", "Matemático", "Estatístico", "Geólogo", "Agricultor", "Pescador",
+            "Técnico em Informática", "Técnico em Enfermagem", "Bancário", "Auditor", "Personal Trainer", "Cientista de Dados",
+            "UX/UI Designer", "Product Manager", "Analista de RH", "Segurança", "Empresário", "Autônomo", "Estudante",
+            "Aposentado", "Do Lar", "Desempregado", "Outro"
         ];
 
         // ============================================================
-        // 2. FUNÇÕES DO CHAT
+        // MOTOR DO CHAT
         // ============================================================
-        function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }
-        
-        function showTyping() {
-            typingIndicator.classList.add('active');
-            scrollToBottom();
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        function hideTyping() { typingIndicator.classList.remove('active'); }
 
         function botSay(text, delay = 600) {
             return new Promise((resolve) => {
-                showTyping();
+                typingIndicator.classList.add('active');
+                scrollToBottom();
                 setTimeout(() => {
-                    hideTyping();
-                    const msg = document.createElement('div');
-                    msg.className = 'message bot';
-                    msg.innerHTML = `<span class="bot-name">Assistente Virtual</span>${text}`;
-                    chatContainer.insertBefore(msg, typingIndicator);
+                    typingIndicator.classList.remove('active');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'message-wrapper bot';
+                    wrapper.innerHTML = `
+                        <div class="bot-avatar">🤖</div>
+                        <div class="message bot">${text}</div>
+                    `;
+                    chatContainer.insertBefore(wrapper, typingIndicator);
                     scrollToBottom();
                     resolve();
                 }, delay);
@@ -314,412 +407,395 @@
         }
 
         function userSay(text) {
-            const msg = document.createElement('div');
-            msg.className = 'message user';
-            msg.textContent = text;
-            chatContainer.insertBefore(msg, typingIndicator);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper user';
+            wrapper.innerHTML = `<div class="message user">${text}</div>`;
+            chatContainer.insertBefore(wrapper, typingIndicator);
             scrollToBottom();
         }
 
-        function showQuickReplies(options) {
-            const container = document.createElement('div');
-            container.className = 'quick-replies';
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.textContent = opt.label;
-                btn.onclick = () => {
-                    container.remove();
-                    userSay(opt.label);
-                    opt.action();
-                };
-                container.appendChild(btn);
-            });
-            chatContainer.insertBefore(container, typingIndicator);
-            scrollToBottom();
-        }
-
-        function enableInput(maskType = 'text') {
+        function enableInput(maskType = 'text', placeholder = 'Digite...') {
             chatInput.disabled = false;
             sendBtn.disabled = false;
             chatInput.value = '';
             chatInput.focus();
             chatInput.dataset.mask = maskType;
+            chatInput.placeholder = placeholder;
+            chatInput.type = maskType === 'password' ? 'password' : 'text';
+            eyeBtn.style.display = maskType === 'password' ? 'block' : 'none';
             
-            if (maskType === 'text') chatInput.placeholder = 'Digite sua resposta...';
+            // Aplica máscara caso já tenha
             if (maskType === 'cpf') chatInput.placeholder = '000.000.000-00';
             if (maskType === 'phone') chatInput.placeholder = '(11) 99999-9999';
             if (maskType === 'cep') chatInput.placeholder = '00000-000';
             if (maskType === 'date') chatInput.placeholder = 'DD/MM/AAAA';
-            if (maskType === 'password') chatInput.placeholder = 'Digite sua senha...';
-            if (maskType === 'pin') chatInput.placeholder = '0000';
         }
 
         function disableInput() {
             chatInput.disabled = true;
             sendBtn.disabled = true;
             chatInput.placeholder = 'Aguarde...';
+            eyeBtn.style.display = 'none';
         }
 
         // ============================================================
-        // 3. MÁSCARAS E VALIDAÇÕES
+        // CONTROLE DO BOTTOM SHEET (Gaveta)
+        // ============================================================
+        function openSheet(title, items, onSelect, showSearch = true) {
+            sheetTitle.textContent = title;
+            sheetList.innerHTML = '';
+            sheetCustomContent.innerHTML = '';
+            sheetSearch.value = '';
+            sheetSearch.style.display = showSearch ? 'block' : 'none';
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.textContent = item;
+                div.onclick = () => {
+                    closeSheet();
+                    onSelect(item);
+                };
+                sheetList.appendChild(div);
+            });
+
+            overlay.classList.add('active');
+            bottomSheet.classList.add('active');
+        }
+
+        function closeSheet() {
+            overlay.classList.remove('active');
+            bottomSheet.classList.remove('active');
+        }
+
+        function filterList() {
+            const query = sheetSearch.value.toLowerCase();
+            const items = sheetList.querySelectorAll('.list-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        // ============================================================
+        // MÁSCARAS
         // ============================================================
         chatInput.addEventListener('input', (e) => {
             const mask = chatInput.dataset.mask;
             let v = e.target.value;
-
             if (mask === 'cpf') {
-                v = v.replace(/\D/g, '');
-                if (v.length > 11) v = v.slice(0, 11);
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                v = v.replace(/\D/g, '').slice(0, 11);
+                v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             } else if (mask === 'phone') {
-                v = v.replace(/\D/g, '');
-                if (v.length > 11) v = v.slice(0, 11);
+                v = v.replace(/\D/g, '').slice(0, 11);
                 if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
                 else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
                 else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-                else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
             } else if (mask === 'cep') {
-                v = v.replace(/\D/g, '');
-                if (v.length > 8) v = v.slice(0, 8);
-                v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+                v = v.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
             } else if (mask === 'date') {
-                v = v.replace(/\D/g, '');
-                if (v.length > 8) v = v.slice(0, 8);
-                v = v.replace(/(\d{2})(\d)/, '$1/$2');
-                v = v.replace(/(\d{2})(\d)/, '$1/$2');
-            } else if (mask === 'pin') {
-                v = v.replace(/\D/g, '');
-                if (v.length > 4) v = v.slice(0, 4);
+                v = v.replace(/\D/g, '').slice(0, 8).replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
             }
             e.target.value = v;
         });
 
-        // Função para mascarar o nome (Ex: João da Silva -> J*** da S***)
-        function maskName(fullName) {
-            if (!fullName) return '';
-            let parts = fullName.trim().split(/\s+/);
-            if (parts.length === 1) return parts[0][0] + '***';
-            
-            // Mantém a primeira letra do primeiro nome e do último nome, mascara o resto
-            let firstName = parts[0];
-            let lastName = parts[parts.length - 1];
-            let middleNames = parts.slice(1, parts.length - 1).map(() => '***').join(' ');
-            
-            let maskedFirst = firstName[0] + '***';
-            let maskedLast = lastName[0] + '***';
-            
-            return `${maskedFirst} ${middleNames ? middleNames + ' ' : ''}${maskedLast}`.trim();
+        function togglePassword() {
+            chatInput.type = chatInput.type === 'password' ? 'text' : 'password';
+            eyeBtn.textContent = chatInput.type === 'password' ? '👁️' : '🙈';
         }
 
-        async function fetchAddress(cep) {
-            try {
-                const res = await fetch(`https://viacep.com.br/ws/${cep.replace(/\D/g,'')}/json/`);
-                const data = await res.json();
-                if (data.erro) return null;
-                return data;
-            } catch (e) { return null; }
-        }
-
-        // Simula a API Paga de KYC / Serpro
-        function simulateKYC(doc) {
-            return new Promise((resolve) => {
+        // Simula KYC API
+        function simulateKYC() {
+            return new Promise(resolve => {
                 setTimeout(() => {
-                    const nomes = ['João da Silva', 'Maria Eduarda Santos', 'Lucas Oliveira Costa', 'Ana Beatriz Souza', 'Pedro Henrique Almeida'];
-                    const randomName = nomes[Math.floor(Math.random() * nomes.length)];
-                    resolve(randomName);
+                    const nomes = ['João da Silva', 'Maria Eduarda Santos', 'Lucas Oliveira Costa', 'Ana Beatriz Souza'];
+                    resolve(nomes[Math.floor(Math.random() * nomes.length)]);
                 }, 1500);
             });
         }
 
+        function maskName(fullName) {
+            let parts = fullName.split(' ');
+            if (parts.length === 1) return parts[0][0] + '***';
+            return `${parts[0][0]}*** ${parts[parts.length - 1][0]}***`;
+        }
+
         // ============================================================
-        // 4. FLUXO DO CHAT (PASSO A PASSO)
+        // FLUXO DO CHAT (JORNADA)
         // ============================================================
-        
-        async function startChat() {
-            await botSay('Olá! Seja bem-vindo ao <strong>MeuBanco Digital</strong>.');
-            await botSay('A abertura da sua conta é rápida, segura e leva poucos minutos.');
-            await botSay('Primeiro, qual tipo de conta você deseja abrir?');
-            
-            showQuickReplies([
-                { label: 'Conta Pessoal (PF)', action: () => { state.tipoConta = 'Pessoa Física'; askCountry(); } },
-                { label: 'Conta Empresarial (PJ)', action: () => { state.tipoConta = 'Pessoa Jurídica'; askCountry(); } }
-            ]);
+        async function startFlow() {
+            await botSay('Olá! Seja bem-vindo ao <strong>MeuBanco</strong>.', 800);
+            await botSay('Para começarmos, qual tipo de conta você deseja abrir?', 500);
+            openSheet('Tipo de Conta', ['Pessoa Física (PF)', 'Pessoa Jurídica (PJ)'], (val) => {
+                state.tipo = val;
+                userSay(val);
+                askCountry();
+            }, false);
         }
 
         async function askCountry() {
-            await botSay('Perfeito. Agora, selecione o seu país de nacionalidade:');
-            
-            // Cria um select customizado dentro do chat
-            const container = document.createElement('div');
-            container.className = 'quick-replies';
-            
-            const select = document.createElement('select');
-            select.className = 'chat-select';
-            Object.keys(countries).forEach(country => {
-                const opt = document.createElement('option');
-                opt.value = country;
-                opt.textContent = country;
-                select.appendChild(opt);
-            });
-            
-            const btn = document.createElement('button');
-            btn.textContent = 'Confirmar País';
-            btn.style.background = 'var(--primary)';
-            btn.style.color = '#000';
-            btn.style.fontWeight = '600';
-            btn.onclick = () => {
-                state.pais = select.value;
-                state.docTipo = countries[state.pais].doc;
-                container.remove();
-                userSay(`${state.pais} (${state.docTipo})`);
+            await botSay('Selecione o seu país de nacionalidade:', 500);
+            openSheet('Selecione o País', Object.keys(countries), (val) => {
+                state.pais = val;
+                state.docTipo = countries[val].doc;
+                userSay(val);
                 askDocument();
-            };
-            
-            container.appendChild(select);
-            container.appendChild(btn);
-            chatContainer.insertBefore(container, typingIndicator);
-            scrollToBottom();
+            });
         }
 
         async function askDocument() {
-            const docConfig = countries[state.pais];
-            await botSay(`Para continuarmos, digite o seu <strong>${state.docTipo}</strong>:`);
-            enableInput(docConfig.mask);
+            const config = countries[state.pais];
+            await botSay(`Digite o seu <strong>${config.doc}</strong> para iniciarmos a validação:`, 500);
+            enableInput(config.mask, config.placeholder);
             state.step = 'doc';
         }
 
-        async function handleDocument(doc) {
-            if (doc.length < 5) {
-                await botSay('Documento inválido. Por favor, digite novamente:');
-                return;
-            }
+        async function handleDoc(doc) {
             state.docValor = doc;
-            await botSay('Validando seus dados em nosso sistema...');
+            await botSay('Buscando informações nos bureaus de crédito...', 1500);
+            const nome = await simulateKYC();
+            state.nomeReal = nome;
+            const mascarado = maskName(nome);
+            await botSay(`Encontrei o titular <strong>${mascarado}</strong> vinculado a este documento.`);
             
-            // Simula KYC
-            const nomeEncontrado = await simulateKYC(doc);
-            state.nomeReal = nomeEncontrado;
-            state.nomeMascarado = maskName(nomeEncontrado);
-            
-            await botSay(`Encontrei o titular <strong>${state.nomeMascarado}</strong> vinculado a este documento.`);
-            await botSay('Essas informações estão corretas?');
-            
-            showQuickReplies([
-                { label: 'Sim, está correto', action: () => { state.nomeCorrigido = state.nomeReal; askBirthDate(); } },
-                { label: 'Não, corrigir nome', action: () => { askCorrectName(); } }
-            ]);
+            openSheet('Confirmação de Titular', ['Sim, está correto', 'Não, corrigir nome'], (val) => {
+                userSay(val);
+                if (val === 'Sim, está correto') {
+                    state.nomeExibicao = state.nomeReal;
+                    askBirthDate();
+                } else {
+                    askCorrectName();
+                }
+            }, false);
         }
 
         async function askCorrectName() {
-            await botSay('Sem problemas. Por favor, digite seu nome completo:');
-            enableInput('text');
+            await botSay('Por favor, digite seu nome completo:', 400);
+            enableInput('text', 'Nome completo');
             state.step = 'nome_correcao';
         }
 
         async function askBirthDate() {
-            await botSay('Agora, digite sua data de nascimento (DD/MM/AAAA):');
-            enableInput('date');
+            await botSay('Agora, informe sua data de nascimento:', 400);
+            enableInput('date', 'DD/MM/AAAA');
             state.step = 'data_nasc';
         }
 
-        async function askMotherName() {
-            await botSay('Qual é o nome completo da sua mãe? (Necessário para validação de segurança)');
-            enableInput('text');
-            state.step = 'nome_mae';
-        }
-
         async function askEmail() {
-            await botSay('Qual é o seu e-mail?');
-            enableInput('text');
-            chatInput.placeholder = 'seu@email.com';
+            await botSay('Qual é o seu melhor e-mail?', 400);
+            enableInput('text', 'seu@email.com');
             state.step = 'email';
         }
 
         async function askPhone() {
-            await botSay('Agora, digite o seu número de celular (com DDD):');
-            enableInput('phone');
-            state.step = 'telefone';
+            await botSay('E o seu número de celular (com DDD)?', 400);
+            enableInput('phone', '(11) 99999-9999');
+            state.step = 'phone';
         }
 
         async function askProfession() {
-            await botSay('Qual é a sua profissão? (Digite ou selecione na lista)');
-            
-            // Adiciona o datalist ao input
-            const datalist = document.createElement('datalist');
-            datalist.id = 'listaProfissoes';
-            profissoes.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p;
-                datalist.appendChild(opt);
+            await botSay('Para entender seu perfil, qual é a sua profissão?', 400);
+            openSheet('Selecione sua Profissão', profissoes, (val) => {
+                state.profissao = val;
+                userSay(val);
+                askIncome();
             });
-            document.body.appendChild(datalist);
-            
-            chatInput.setAttribute('list', 'listaProfissoes');
-            enableInput('text');
-            chatInput.placeholder = 'Digite sua profissão...';
-            state.step = 'profissao';
         }
 
         async function askIncome() {
-            await botSay('Qual é a sua renda mensal aproximada?');
-            showQuickReplies([
-                { label: 'Até R$ 2.000', action: () => { state.renda = 'Até R$ 2.000'; askCompany(); } },
-                { label: 'R$ 2.001 a R$ 5.000', action: () => { state.renda = 'R$ 2.001 a R$ 5.000'; askCompany(); } },
-                { label: 'R$ 5.001 a R$ 10.000', action: () => { state.renda = 'R$ 5.001 a R$ 10.000'; askCompany(); } },
-                { label: 'Acima de R$ 10.000', action: () => { state.renda = 'Acima de R$ 10.000'; askCompany(); } }
-            ]);
+            await botSay('Qual é a sua renda mensal aproximada?', 400);
+            openSheet('Faixa de Renda', ['Até R$ 2.000', 'R$ 2.001 a R$ 5.000', 'R$ 5.001 a R$ 10.000', 'Acima de R$ 10.000'], (val) => {
+                state.renda = val;
+                userSay(val);
+                askDocUpload();
+            }, false);
         }
 
-        async function askCompany() {
-            await botSay('Você trabalha em alguma empresa? Se sim, digite o nome. (Se não, digite "Não")');
-            enableInput('text');
-            state.step = 'empresa';
-        }
-
-        // ============================================================
-        // 5. UPLOAD DE DOCUMENTO COM BLUR
-        // ============================================================
-        async function askDocumentPhoto() {
-            await botSay('Para segurança, precisamos que você envie uma foto do seu documento de identificação.');
+        // --- UPLOAD DE DOCUMENTO ---
+        async function askDocUpload() {
+            await botSay('Para segurança, precisamos que você envie uma foto da <strong>frente</strong> do seu documento.', 500);
             
-            // Cria o widget de upload no chat
-            const container = document.createElement('div');
-            container.className = 'quick-replies';
-            container.id = 'uploadWidgetContainer';
-            
-            const uploadArea = document.createElement('div');
-            uploadArea.className = 'upload-widget';
-            uploadArea.innerHTML = `
-                <div style="font-size: 24px; margin-bottom: 8px;">📸</div>
-                <div style="font-weight: 600; margin-bottom: 4px;">Tirar foto ou enviar arquivo</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Frente do documento</div>
+            sheetCustomContent.innerHTML = `
+                <label class="camera-area">
+                    <input type="file" accept="image/*" capture="environment" onchange="handleFileUpload(this)">
+                    <div style="font-size: 32px; margin-bottom: 8px;">📸</div>
+                    <div style="font-weight: 600;">Tirar Foto ou Escolher</div>
+                </label>
             `;
+            openSheet('Envio de Documento', [], null, false);
+        }
+
+        window.handleFileUpload = (input) => {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Fecha a gaveta de upload
+                    closeSheet();
+                    
+                    // Adiciona mensagem do usuário
+                    userSay('📎 Foto do documento enviada');
+                    
+                    // Mostra o preview borrado no chat
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'message-wrapper user';
+                    wrapper.innerHTML = `
+                        <div class="message user" style="padding: 8px; background: transparent;">
+                            <div class="preview-container active" style="margin:0;">
+                                <img src="${e.target.result}" class="img-preview" id="uploadedImg">
+                                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                    <button onclick="askDocUpload()" style="flex:1; background:var(--surface-light); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600;">Editar</button>
+                                    <button onclick="confirmDocUpload(this)" style="flex:1; background:var(--primary); color:#000; border:none; padding:12px; border-radius:8px; font-weight:600;">Confirmar</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    chatContainer.insertBefore(wrapper, typingIndicator);
+                    scrollToBottom();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.confirmDocUpload = (btn) => {
+            const img = document.getElementById('uploadedImg');
+            if (img) {
+                img.style.filter = 'blur(20px)'; // Aumenta o blur
+                btn.parentElement.parentElement.innerHTML = '<div style="padding:10px; color:var(--success); font-weight:600;">✅ Documento Validado</div>';
+                askSelfie();
+            }
+        };
+
+        // --- RECONHECIMENTO FACIAL ---
+        async function askSelfie() {
+            await botSay('Agora, precisamos validar que é você. Posicione seu rosto no centro para a biometria.', 800);
             
-            const previewBox = document.createElement('div');
-            previewBox.className = 'doc-preview-box';
-            previewBox.id = 'docPreviewBox';
-            previewBox.innerHTML = `
-                <img src="https://via.placeholder.com/600x400/333333/ffffff?text=DOCUMENTO" class="img-blur" id="blurredImg">
-                <div class="doc-actions">
-                    <button class="btn-edit" onclick="editDoc()">Editar</button>
-                    <button class="btn-confirm" onclick="confirmDoc()">Confirmar</button>
+            sheetCustomContent.innerHTML = `
+                <div style="text-align: center;">
+                    <div class="face-scanner">
+                        <img src="https://via.placeholder.com/240/333333/ffffff?text=👤" alt="Rosto">
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">Capturando biometria facial...</p>
+                    <button id="btnSelfieDone" style="display:none; width: 100%; padding: 16px; border-radius: 30px; background: var(--primary); border: none; font-weight: bold; font-size: 16px;" onclick="finishSelfie()">Concluir Captura</button>
                 </div>
             `;
+            openSheet('Validação Facial', [], null, false);
             
-            uploadArea.onclick = () => {
-                uploadArea.style.display = 'none';
-                previewBox.classList.add('active');
-                scrollToBottom();
-            };
-            
-            container.appendChild(uploadArea);
-            container.appendChild(previewBox);
-            chatContainer.insertBefore(container, typingIndicator);
-            scrollToBottom();
+            // Simula o tempo do scanner
+            setTimeout(() => {
+                document.getElementById('btnSelfieDone').style.display = 'block';
+            }, 3000);
         }
 
-        // Funções globais para os botões do widget de upload
-        window.editDoc = () => {
-            document.querySelector('.upload-widget').style.display = 'block';
-            document.getElementById('docPreviewBox').classList.remove('active');
+        window.finishSelfie = () => {
+            closeSheet();
+            userSay('📸 Biometria facial capturada');
+            askCep();
         };
 
-        window.confirmDoc = () => {
-            document.getElementById('blurredImg').style.filter = 'blur(0px)'; // Remove o blur temporariamente
-            setTimeout(() => {
-                document.getElementById('blurredImg').style.filter = 'blur(20px)'; // Aplica blur forte
-                document.getElementById('uploadWidgetContainer').remove(); // Remove do chat
-                state.docFotoConfirmada = true;
-                userSay('Documento enviado e confirmado.');
-                botSay('Documento validado com sucesso! ✅', 400).then(() => {
-                    askCep();
-                });
-            }, 800);
-        };
-
-        // ============================================================
-        // 6. ENDEREÇO, SENHA E FINALIZAÇÃO
-        // ============================================================
+        // --- ENDEREÇO ---
         async function askCep() {
-            await botSay('Agora precisamos do seu endereço. Digite o seu CEP (somente números):');
-            enableInput('cep');
+            await botSay('Certo! Agora digite seu CEP para preencher o endereço.', 500);
+            enableInput('cep', '00000-000');
             state.step = 'cep';
         }
 
         async function handleCep(cep) {
-            await botSay('Buscando endereço...');
-            const address = await fetchAddress(cep);
-            
-            if (!address) {
-                await botSay('CEP não encontrado. Por favor, digite novamente:');
+            const cleanCep = cep.replace(/\D/g,'');
+            if (cleanCep.length !== 8) {
+                botSay('CEP inválido. Tente novamente:');
                 return;
             }
-
-            state.cep = cep;
-            state.rua = address.logradouro;
-            state.bairro = address.bairro;
-            state.cidade = address.localidade;
-            state.uf = address.uf;
-
-            await botSay(`Endereço encontrado: <strong>${address.logradouro}</strong>, ${address.bairro}, ${address.localidade} - ${address.uf}.`);
-            await botSay('Agora, digite apenas o <strong>número</strong> da sua residência:');
-            enableInput('text');
-            chatInput.placeholder = 'Ex: 123';
-            state.step = 'numero';
+            await botSay('Buscando endereço via ViaCEP...', 1000);
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+                const data = await res.json();
+                if (data.erro) {
+                    botSay('CEP não encontrado. Tente novamente:');
+                    return;
+                }
+                state.cep = cep;
+                await botSay(`Encontrei: <strong>${data.logradouro}</strong>, ${data.bairro}, ${data.localidade} - ${data.uf}.`);
+                await botSay('Qual o número da sua residência?', 400);
+                enableInput('text', 'Ex: 123');
+                state.step = 'numero';
+            } catch (e) {
+                botSay('Erro de rede. Digite o CEP novamente:');
+            }
         }
 
-        async function askComplement() {
-            await botSay('Deseja adicionar um complemento? (Apto, bloco, etc.) Se não, digite "Não".');
-            enableInput('text');
-            state.step = 'complemento';
-        }
-
+        // --- SENHA E PIN ---
         async function askPassword() {
-            await botSay('Para finalizar, crie uma senha de acesso para sua conta (mínimo 8 caracteres):');
-            enableInput('password');
+            await botSay('Quase lá! Crie uma senha de acesso segura (mínimo 8 caracteres).', 500);
+            enableInput('password', 'Senha (min. 8 caracteres)');
             state.step = 'senha';
         }
 
         async function askPin() {
-            await botSay('Agora, crie um PIN de segurança de 4 dígitos:');
-            enableInput('pin');
-            state.step = 'pin';
+            await botSay('Por fim, crie um PIN de 4 dígitos para transações.', 500);
+            
+            // Configura o teclado numérico customizado
+            state.pinBuffer = '';
+            sheetCustomContent.innerHTML = `
+                <div class="pin-display" id="pinDisplay">
+                    <div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div>
+                </div>
+                <div class="keypad" id="keypad">
+                    ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="pressPin('${n}')">${n}</button>`).join('')}
+                    <button class="key del" onclick="deletePin()">⌫</button>
+                    <button class="key" onclick="pressPin('0')">0</button>
+                    <button class="key" style="visibility:hidden;">#</button>
+                </div>
+            `;
+            openSheet('Criar PIN de Acesso', [], null, false);
+        }
+
+        window.pressPin = (num) => {
+            if (state.pinBuffer.length < 4) {
+                state.pinBuffer += num;
+                updatePinDots();
+            }
+        };
+
+        window.deletePin = () => {
+            if (state.pinBuffer.length > 0) {
+                state.pinBuffer = state.pinBuffer.slice(0, -1);
+                updatePinDots();
+            }
+        };
+
+        function updatePinDots() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, index) => {
+                if (index < state.pinBuffer.length) dot.classList.add('filled');
+                else dot.classList.remove('filled');
+            });
+
+            if (state.pinBuffer.length === 4) {
+                setTimeout(() => {
+                    state.pin = state.pinBuffer;
+                    closeSheet();
+                    userSay('🔒 PIN de 4 dígitos criado');
+                    askTerms();
+                }, 300);
+            }
         }
 
         async function askTerms() {
-            await botSay('Você aceita os Termos de Abertura de Conta e a Política de Privacidade?');
-            showQuickReplies([
-                { label: 'Sim, aceito os termos', action: () => { finishFlow(); } },
-                { label: 'Não aceito', action: () => { botSay('Para abrir a conta é necessário aceitar os termos. A operação foi cancelada.'); disableInput(); } }
-            ]);
-        }
-
-        async function finishFlow() {
-            await botSay('Tudo certo com seus dados! Estou enviando para nossa análise final de crédito e segurança...');
-            disableInput();
-            
-            // Simula análise final
-            await botSay('Verificando dados cadastrais...', 1000);
-            await botSay('Executando análise antifraude...', 1000);
-            await botSay('Aprovando cadastro...', 1000);
-            
-            // Mostra a tela de sucesso
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('inputArea').style.display = 'none';
-            
-            const nomeExibicao = state.nomeCorrigido || state.nomeReal;
-            document.getElementById('resNome').textContent = nomeExibicao;
-            document.getElementById('resConta').textContent = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9)}`;
-            document.getElementById('resTipo').textContent = state.tipoConta;
-            document.getElementById('resData').textContent = new Date().toLocaleDateString('pt-BR');
-            
-            document.getElementById('successScreen').classList.add('active');
+            await botSay('Você aceita os Termos de Uso e a Política de Privacidade do MeuBanco?', 500);
+            openSheet('Termos e Privacidade', ['Aceito os termos', 'Não aceito'], (val) => {
+                userSay(val);
+                if (val === 'Aceito os termos') {
+                    finishFlow();
+                } else {
+                    botSay('Infelizmente não podemos prosseguir sem o aceite dos termos.');
+                    disableInput();
+                }
+            }, false);
         }
 
         // ============================================================
-        // 7. PROCESSAMENTO DO INPUT DO USUÁRIO (STATE MACHINE)
+        // FINALIZAÇÃO E INPUT DO TECLADO
         // ============================================================
         function processInput() {
             const value = chatInput.value.trim();
@@ -730,81 +806,47 @@
             disableInput();
 
             switch (state.step) {
-                case 'doc':
-                    handleDocument(value);
-                    break;
-                case 'nome_correcao':
-                    state.nomeCorrigido = value;
-                    askBirthDate();
-                    break;
-                case 'data_nasc':
-                    state.dataNasc = value;
-                    askMotherName();
-                    break;
-                case 'nome_mae':
-                    state.nomeMae = value;
-                    askEmail();
-                    break;
-                case 'email':
-                    state.email = value;
-                    askPhone();
-                    break;
-                case 'telefone':
-                    state.telefone = value;
-                    askProfession();
-                    break;
-                case 'profissao':
-                    state.profissao = value;
-                    chatInput.removeAttribute('list'); // Remove o datalist
-                    askIncome();
-                    break;
-                case 'empresa':
-                    state.empresa = value;
-                    askDocumentPhoto();
-                    break;
-                case 'cep':
-                    handleCep(value);
-                    break;
-                case 'numero':
-                    state.numero = value;
-                    askComplement();
-                    break;
-                case 'complemento':
-                    state.complemento = value;
-                    askPassword();
-                    break;
+                case 'doc': handleDoc(value); break;
+                case 'nome_correcao': state.nomeExibicao = value; askBirthDate(); break;
+                case 'data_nasc': state.dataNasc = value; askEmail(); break;
+                case 'email': state.email = value; askPhone(); break;
+                case 'phone': state.telefone = value; askProfession(); break;
+                case 'cep': handleCep(value); break;
+                case 'numero': state.numero = value; askPassword(); break;
                 case 'senha':
                     if (value.length < 8) {
-                        botSay('A senha deve ter no mínimo 8 caracteres. Digite novamente:');
-                        enableInput('password');
-                        return;
+                        botSay('A senha deve ter no mínimo 8 caracteres.');
+                        enableInput('password', 'Senha (min. 8 caracteres)');
+                    } else {
+                        state.senha = value;
+                        askPin();
                     }
-                    state.senha = value;
-                    askPin();
-                    break;
-                case 'pin':
-                    if (value.length !== 4) {
-                        botSay('O PIN deve ter exatamente 4 dígitos. Digite novamente:');
-                        enableInput('pin');
-                        return;
-                    }
-                    state.pin = value;
-                    askTerms();
                     break;
             }
         }
 
         sendBtn.addEventListener('click', processInput);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') processInput();
-        });
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processInput(); });
 
-        // ============================================================
-        // 8. INICIALIZAÇÃO
-        // ============================================================
+        async function finishFlow() {
+            await botSay('Perfeito. Estamos processando sua conta em nosso servidor seguro...', 1500);
+            await botSay('Análise antifraude concluída com sucesso.', 1000);
+            
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('inputArea').style.display = 'none';
+            
+            document.getElementById('resNome').textContent = state.nomeExibicao;
+            document.getElementById('resConta').textContent = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9)}`;
+            document.getElementById('resTipo').textContent = state.tipo;
+            document.getElementById('resData').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            document.getElementById('successScreen').classList.add('active');
+        }
+
+        // INICIALIZA
         window.onload = () => {
             disableInput();
-            startChat();
+            startFlow();
         };
     </script>
 </body>
