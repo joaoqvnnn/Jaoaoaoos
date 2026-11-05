@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abertura de Conta - MeuBanco</title>
+    <title>Abertura de Conta</title>
     <style>
         /* ===== RESET E VARIÁVEIS ===== */
         :root {
-            --bg: #050505;
-            --surface: #121214;
-            --surface-light: #1e1e22;
-            --primary: #FFCC00; /* Amarelo Ouro */
-            --primary-hover: #e6b800;
-            --text: #FFFFFF;
-            --text-muted: #88888D;
-            --danger: #FF453A;
-            --success: #30D158;
-            --border: rgba(255,255,255,0.08);
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 12px;
-            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --bg: #000000;
+            --chat-bot: #262626;
+            --chat-user: #ffffff;
+            --text-bot: #ffffff;
+            --text-user: #000000;
+            --primary: #ffde00; /* Amarelo do botão */
+            --primary-dark: #e6c800;
+            --text-muted: #8e8e93;
+            --link: #2f8fff;
+            --border: #333333;
+            --surface: #1c1c1e;
+            --danger: #ff453a;
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
-            font-family: var(--font);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
+            color: #fff;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -41,283 +39,496 @@
 
         /* ===== HEADER ===== */
         .header {
-            display: flex; align-items: center; padding: 16px 20px;
-            background: rgba(5,5,5,0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0; z-index: 10;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            background: var(--bg);
         }
         .close-btn {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: var(--surface-light); border: none;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 1px solid #333;
+            background: transparent;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text); font-size: 14px;
+            cursor: pointer; color: #fff; font-size: 20px;
             transition: background 0.2s;
         }
-        .header .title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; letter-spacing: 0.5px;}
-        .bank-logo { font-weight: 800; color: var(--primary); }
+        .close-btn:active { background: #222; }
+        .header-title {
+            flex: 1; text-align: center; font-size: 16px; font-weight: 600;
+            display: none;
+        }
 
         /* ===== ÁREA DO CHAT ===== */
         .chat-container {
-            flex: 1; padding: 24px 20px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 16px;
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             scrollbar-width: none;
             scroll-behavior: smooth;
         }
         .chat-container::-webkit-scrollbar { display: none; }
 
-        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; }
-        .message-wrapper.bot { align-self: flex-start; }
-        .message-wrapper.user { align-self: flex-end; align-items: flex-end; }
+        .msg-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .msg-group.bot { align-items: flex-start; }
+        .msg-group.user { align-items: flex-end; }
 
-        .bot-avatar {
-            width: 28px; height: 28px; border-radius: 50%; background: var(--surface-light);
-            display: flex; align-items: center; justify-content: center; font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        .message {
+        .bubble {
             padding: 14px 18px;
-            border-radius: var(--radius-lg);
-            font-size: 15px; line-height: 1.45;
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            max-width: 85%;
             word-wrap: break-word;
+            animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .message.bot {
-            background: var(--surface);
-            border: 1px solid var(--border);
+        .bubble.bot {
+            background-color: var(--chat-bot);
+            color: var(--text-bot);
             border-bottom-left-radius: 4px;
+            margin-bottom: 4px;
         }
-        .message.user {
-            background: var(--primary); color: #000;
+        .bubble.user {
+            background-color: var(--chat-user);
+            color: var(--text-user);
             border-bottom-right-radius: 4px;
             font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .bubble strong { font-weight: 700; }
+        
+        .alterar-link {
+            color: var(--link);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 4px;
+            padding: 4px;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* ===== ÁREA DE INPUT ===== */
-        .input-area {
-            padding: 12px 20px 24px; background: var(--bg);
-            border-top: 1px solid var(--border); display: flex; gap: 12px;
-            flex-shrink: 0; align-items: center; z-index: 10;
-        }
-        .input-wrapper {
-            flex: 1; display: flex; align-items: center;
-            background: var(--surface); border: 1px solid var(--surface-light);
-            border-radius: 30px; padding: 4px 16px;
-            transition: border 0.2s;
-        }
-        .input-wrapper:focus-within { border-color: var(--primary); }
-        .input-area input {
-            flex: 1; background: transparent; border: none;
-            padding: 14px 0; font-size: 16px; color: var(--text);
-            outline: none;
-        }
-        .input-area input::placeholder { color: var(--text-muted); }
-        .input-area button {
-            width: 48px; height: 48px; border-radius: 50%; background-color: var(--primary);
-            border: none; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: #000; transition: transform 0.1s, opacity 0.2s;
-            flex-shrink: 0;
-        }
-        .input-area button:active { transform: scale(0.92); }
-        .input-area button:disabled { background: var(--surface-light); color: var(--text-muted); cursor: not-allowed; }
-
-        /* Botão de olho para senha */
-        .eye-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 8px; }
-
-        /* ===== DIGITANDO... ===== */
+        /* Typing Indicator */
         .typing {
-            display: none; align-self: flex-start; background: var(--surface);
-            padding: 16px 20px; border-radius: var(--radius-lg); border-bottom-left-radius: 4px;
-            gap: 4px; border: 1px solid var(--border);
+            display: none;
+            background-color: var(--chat-bot);
+            padding: 16px 20px;
+            border-radius: 20px;
+            border-bottom-left-radius: 4px;
+            width: 60px;
+            gap: 4px;
+            align-self: flex-start;
+            margin-bottom: 8px;
         }
         .typing.active { display: flex; }
         .typing span {
-            width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%;
+            width: 6px; height: 6px; background: #888; border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
         .typing span:nth-child(1) { animation-delay: -0.32s; }
         .typing span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* ===== BOTTOM SHEET (GAVETA DESLIZANTE) ===== */
+        /* ===== ÁREA DE INPUT DO CHAT ===== */
+        .chat-input-area {
+            padding: 12px 20px 24px;
+            background: var(--bg);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            border-top: 1px solid #111;
+            z-index: 10;
+        }
+        .chat-input-area.active { display: flex; }
+        
+        .input-box {
+            flex: 1;
+            background: var(--chat-bot);
+            border-radius: 30px;
+            padding: 4px 16px;
+            display: flex;
+            align-items: center;
+        }
+        .input-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 0;
+            font-size: 16px;
+            color: #fff;
+            outline: none;
+        }
+        .input-box input::placeholder { color: var(--text-muted); }
+        
+        .send-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .send-btn:active { transform: scale(0.9); }
+        .send-btn svg { width: 20px; height: 20px; fill: #000; }
+        .send-btn:disabled { background: #333; cursor: not-allowed; }
+
+        /* ===== BOTÃO FIXO INFERIOR (Amarelo) ===== */
+        .bottom-btn-area {
+            padding: 12px 20px 24px;
+            background: var(--bg);
+            flex-shrink: 0;
+            display: none;
+            z-index: 10;
+        }
+        .bottom-btn-area.active { display: block; }
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        
+        .bottom-btn-group { display: flex; gap: 12px; }
+        .btn-secondary {
+            flex: 1; background: transparent; color: #fff; border: 1px solid #333;
+            border-radius: 30px; padding: 18px; font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+
+        /* ===== BOTTOM SHEET (MODAL) ===== */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 90;
+            background: rgba(0,0,0,0.7);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            z-index: 90;
         }
         .overlay.active { opacity: 1; pointer-events: auto; }
 
-        .bottom-sheet {
+        .sheet {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--surface); border-radius: 24px 24px 0 0;
-            padding: 24px 20px 40px; z-index: 100;
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 85vh; display: flex; flex-direction: column;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px 32px;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            display: flex; flex-direction: column;
         }
-        .bottom-sheet.active { transform: translateY(0); }
+        .sheet.active { transform: translateY(0); }
+        .sheet-handle { width: 40px; height: 4px; background: #444; border-radius: 4px; margin: 0 auto 20px; }
+        .sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center; }
         
-        .sheet-handle {
-            width: 40px; height: 4px; background: var(--surface-light);
-            border-radius: 4px; margin: 0 auto 20px;
+        /* Opções (Radio) */
+        .option-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0; cursor: pointer; border-bottom: 1px solid #333;
         }
-        .sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; text-align: center; }
-        
-        .search-bar {
-            background: var(--surface-light); border: 1px solid var(--border);
-            border-radius: 12px; padding: 12px 16px; color: var(--text);
-            width: 100%; font-size: 16px; margin-bottom: 16px; outline: none;
+        .option-item:last-child { border-bottom: none; }
+        .option-text { font-size: 16px; }
+        .radio-circle {
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid #555; display: flex; align-items: center; justify-content: center;
         }
-        
-        .list-container {
-            overflow-y: auto; flex: 1; scrollbar-width: none;
-            display: flex; flex-direction: column; gap: 8px;
+        .option-item.selected .radio-circle { border-color: var(--primary); }
+        .option-item.selected .radio-circle::after {
+            content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--primary);
         }
-        .list-container::-webkit-scrollbar { display: none; }
-        
-        .list-item {
-            padding: 16px; background: var(--surface-light); border-radius: 12px;
-            cursor: pointer; transition: background 0.2s; font-size: 15px;
-        }
-        .list-item:hover { background: #2a2a2e; }
 
-        /* ===== UPLOAD DE DOCUMENTO E SELFIE ===== */
-        .camera-area {
-            background: var(--surface); border: 2px dashed var(--surface-light);
-            border-radius: var(--radius-md); padding: 30px; text-align: center;
-            cursor: pointer; margin-bottom: 16px; position: relative; overflow: hidden;
-        }
-        .camera-area:hover { border-color: var(--primary); }
-        .camera-area input[type="file"] { display: none; }
-        
-        .preview-container { display: none; margin-bottom: 16px; text-align: center; }
-        .preview-container.active { display: block; }
-        .img-preview {
-            width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md);
-            filter: blur(15px); transition: filter 0.3s ease; border: 1px solid var(--surface-light);
-        }
-        
-        /* Scanner Facial */
-        .face-scanner {
-            width: 240px; height: 240px; border-radius: 50%;
-            border: 2px solid var(--primary); margin: 20px auto;
-            position: relative; overflow: hidden; background: #1a1a1a;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .face-scanner::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--primary); box-shadow: 0 0 15px var(--primary);
-            animation: scanLine 2s infinite linear;
-        }
-        @keyframes scanLine { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        .face-scanner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-
-        /* ===== TECLADO CUSTOMIZADO (PIN) ===== */
-        .pin-display { display: flex; justify-content: center; gap: 16px; margin: 30px 0; }
-        .pin-dot {
-            width: 16px; height: 16px; border-radius: 50%;
-            background: var(--surface-light); transition: background 0.2s, transform 0.1s;
-        }
-        .pin-dot.filled { background: var(--primary); transform: scale(1.2); }
-        
-        .keypad {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-            margin: 0 auto; max-width: 300px;
-        }
-        .key {
-            background: var(--surface-light); color: var(--text); border: none;
-            border-radius: 50%; width: 70px; height: 70px; margin: 0 auto;
-            font-size: 24px; font-weight: 500; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 0.1s;
-        }
-        .key:active { background: #3a3a3e; }
-        .key.del { background: transparent; font-size: 18px; }
-
-        /* ===== TELA DE SUCESSO ===== */
-        .success-screen {
+        /* ===== TELAS CHEIAS (Endereço, Selfie, Termos, Timeline) ===== */
+        .fullscreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 200;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; text-align: center;
+            background: var(--bg);
+            z-index: 200;
+            display: flex; flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
         }
-        .success-screen.active { display: flex; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fullscreen.active { transform: translateY(0); }
         
-        .success-icon { font-size: 72px; margin-bottom: 16px; }
-        .receipt {
-            background: var(--surface); border-radius: 20px; padding: 24px;
-            width: 100%; max-width: 340px; margin: 24px 0; text-align: left;
-            border: 1px solid var(--border);
+        .fs-header {
+            padding: 16px 20px; display: flex; align-items: center;
+            border-bottom: 1px solid #111;
         }
-        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 15px; }
-        .receipt-item:last-child { margin-bottom: 0; }
-        .receipt-item span:first-child { color: var(--text-muted); }
-        .receipt-item span:last-child { font-weight: 600; }
+        .fs-back {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid #333; background: transparent;
+            color: #fff; font-size: 20px; cursor: pointer;
+        }
+        .fs-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; margin-right: 40px; }
+        
+        .fs-content {
+            flex: 1; padding: 24px 20px; overflow-y: auto;
+            display: flex; flex-direction: column;
+        }
+        
+        /* Formulário de Endereço */
+        .input-group { margin-bottom: 24px; position: relative; }
+        .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .input-group input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid #333; padding: 8px 0;
+            font-size: 16px; color: #fff; outline: none;
+        }
+        .input-group input:focus { border-bottom-color: var(--primary); }
+        .input-group.error label { color: var(--danger); }
+        .input-group.error input { border-bottom-color: var(--danger); }
+        .error-msg { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+        .input-group.error .error-msg { display: block; }
+        
+        .fs-footer { padding: 20px; background: var(--bg); }
 
-        /* Botão Principal */
-        .btn-main {
-            background: var(--primary); color: #000; border: none;
-            padding: 16px 32px; border-radius: 30px; font-size: 16px; font-weight: 700;
-            width: 100%; max-width: 340px; cursor: pointer; transition: transform 0.1s;
+        /* Selfie */
+        .selfie-container {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #fff; color: #000;
         }
-        .btn-main:active { transform: scale(0.97); }
+        .selfie-container .fs-header { background: #fff; border-bottom: none; }
+        .selfie-container .fs-back { color: #000; border-color: #ddd; }
+        .selfie-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .selfie-subtitle { font-size: 14px; color: #666; margin-bottom: 30px; }
+        
+        .hexagon-mask {
+            width: 260px; height: 300px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: #eee;
+            position: relative;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .hexagon-mask img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: #00ff00; box-shadow: 0 0 10px #00ff00;
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        
+        .timer { font-size: 24px; font-weight: 600; color: #666; margin-top: 24px; }
+        .selfie-instruction { font-size: 16px; margin-top: 12px; font-weight: 500; }
+
+        /* Termos */
+        .terms-text { font-size: 13px; color: #ccc; line-height: 1.5; text-align: justify; }
+        .terms-text h3 { color: #fff; margin: 16px 0 8px; font-size: 14px; }
+        
+        /* Timeline (Próximos Passos) */
+        .timeline { display: flex; flex-direction: column; margin-top: 20px; }
+        .tl-item { display: flex; gap: 16px; margin-bottom: 24px; position: relative; }
+        .tl-item::before {
+            content: ''; position: absolute; left: 11px; top: 24px; bottom: -24px;
+            width: 2px; background: #333;
+        }
+        .tl-item:last-child::before { display: none; }
+        .tl-icon {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid #333;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; background: var(--bg); z-index: 2;
+        }
+        .tl-item.done .tl-icon { border-color: #00ff00; color: #00ff00; }
+        .tl-item.active .tl-icon { border-color: var(--primary); color: var(--primary); border-style: dashed; }
+        .tl-content h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .tl-content p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+        .tl-item.done .tl-content h4 { color: #fff; }
+        .tl-item.active .tl-content h4 { color: var(--primary); }
+
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
     <div class="header">
-        <button class="close-btn" onclick="if(confirm('Cancelar abertura de conta?')) location.reload()">✕</button>
-        <div class="title"><span class="bank-logo">MeuBanco</span> Digital</div>
+        <button class="close-btn" onclick="if(confirm('Deseja cancelar a abertura de conta?')) location.reload()">✕</button>
+        <div class="header-title" id="headerTitle"></div>
     </div>
 
     <!-- CHAT -->
     <div class="chat-container" id="chatContainer">
-        <div class="typing" id="typingIndicator"><span></span><span></span><span></span></div>
+        <div class="typing" id="typing"><span></span><span></span><span></span></div>
     </div>
 
-    <!-- INPUT -->
-    <div class="input-area" id="inputArea">
-        <div class="input-wrapper">
-            <input type="text" id="chatInput" placeholder="Digite sua mensagem..." autocomplete="off" disabled>
-            <button class="eye-btn" id="eyeBtn" style="display:none;" onclick="togglePassword()">👁️</button>
+    <!-- CHAT INPUT (Oculto até necessário) -->
+    <div class="chat-input-area" id="chatInputArea">
+        <div class="input-box">
+            <input type="text" id="chatInput" placeholder="Digite..." autocomplete="off">
         </div>
-        <button id="sendBtn" disabled onclick="processInput()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <button class="send-btn" id="sendBtn" onclick="handleSend()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
     </div>
 
-    <!-- OVERLAY (Fundo Escuro) -->
-    <div class="overlay" id="overlay" onclick="closeSheet()"></div>
-
-    <!-- BOTTOM SHEET (Gaveta Genérica) -->
-    <div class="bottom-sheet" id="bottomSheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title" id="sheetTitle">Selecione</div>
-        <input type="text" class="search-bar" id="sheetSearch" placeholder="Buscar..." oninput="filterList()">
-        <div class="list-container" id="sheetList"></div>
-        <div id="sheetCustomContent"></div>
+    <!-- BOTTOM BUTTON AREA (Oculto até necessário) -->
+    <div class="bottom-btn-area" id="bottomBtnArea">
+        <button class="btn-primary" id="mainActionBtn">Selecionar</button>
     </div>
 
-    <!-- TELA DE SUCESSO -->
-    <div class="success-screen" id="successScreen">
-        <div class="success-icon">✨</div>
-        <h2 style="font-size: 24px; margin-bottom: 8px;">Conta Aprovada</h2>
-        <p style="color: var(--text-muted); font-size: 15px;">Bem-vindo ao futuro dos seus negócios.</p>
-        
-        <div class="receipt">
-            <div class="receipt-item"><span>Titular</span><span id="resNome">-</span></div>
-            <div class="receipt-item"><span>Agência</span><span>0001</span></div>
-            <div class="receipt-item"><span>Conta</span><span id="resConta">-</span></div>
-            <div class="receipt-item"><span>Tipo</span><span id="resTipo">-</span></div>
-            <div class="receipt-item"><span>Data</span><span id="resData">-</span></div>
-            <div class="receipt-item"><span>Status</span><span style="color: var(--success);">Ativa</span></div>
+    <!-- OVERLAY (Para os Modais) -->
+    <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+    <!-- BOTTOM SHEET 1: SELEÇÃO DE CONTA -->
+    <div class="sheet" id="sheetAccountType">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Que tipo de conta você quer abrir?</div>
+        <div class="option-item" onclick="selectAccountType('PF', this)">
+            <div class="option-text">Abrir uma conta pessoal (PF)</div>
+            <div class="radio-circle"></div>
         </div>
-        <button class="btn-main" onclick="alert('Entrando no app...')">Acessar Conta</button>
+        <div class="option-item" onclick="selectAccountType('PJ', this)">
+            <div class="option-text">Abrir uma conta empresarial (PJ)</div>
+            <div class="radio-circle"></div>
+        </div>
+        <div style="margin-top: 24px;">
+            <button class="btn-primary" id="btnConfirmType" onclick="confirmAccountType()" disabled style="opacity: 0.5;">Confirmar</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM SHEET 2: DDI (Países) -->
+    <div class="sheet" id="sheetDDI" style="height: 80vh;">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title" style="text-align: left; margin-bottom: 12px;">Selecione o DDI do seu celular</div>
+        <div class="input-box" style="background: #2c2c2e; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; padding: 12px;">
+            <span style="margin-right: 8px;">🔍</span>
+            <input type="text" id="searchDDI" placeholder="Buscar por país ou região" style="font-size: 16px;" oninput="filterDDI()">
+        </div>
+        <div style="overflow-y: auto; flex: 1;" id="ddiList">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+
+    <!-- FULLSCREEN: ENDEREÇO -->
+    <div class="fullscreen" id="fsAddress">
+        <div class="fs-header">
+            <button class="fs-back" onclick="closeFullscreen('fsAddress')">←</button>
+            <div class="fs-title">Endereço residencial</div>
+        </div>
+        <div class="fs-content">
+            <p style="font-size: 14px; margin-bottom: 24px; color: #ccc;">Verifique os dados abaixo e preencha os campos restantes.</p>
+            
+            <div class="input-group">
+                <label>CEP</label>
+                <input type="text" id="endCep" readonly>
+            </div>
+            <div class="input-group">
+                <label>Endereço</label>
+                <input type="text" id="endRua" readonly>
+            </div>
+            <div class="input-group" id="groupNumero">
+                <label style="color: var(--danger);">Número</label>
+                <input type="tel" id="endNumero" placeholder="Preencha seu número" style="border-bottom-color: var(--danger);">
+                <div class="error-msg">Preencha seu número</div>
+            </div>
+            <div class="input-group">
+                <label>Complemento (Opcional)</label>
+                <input type="text" id="endComplemento">
+            </div>
+            <div class="input-group">
+                <label>Bairro</label>
+                <input type="text" id="endBairro" readonly>
+            </div>
+            <div class="input-group">
+                <label>Estado</label>
+                <input type="text" id="endEstado" readonly>
+            </div>
+        </div>
+        <div class="fs-footer">
+            <button class="btn-primary" onclick="confirmAddress()">Confirmar</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN: SELFIE -->
+    <div class="fullscreen selfie-container" id="fsSelfie">
+        <div class="fs-header">
+            <button class="fs-back" onclick="closeFullscreen('fsSelfie')">✕</button>
+        </div>
+        <div class="selfie-title">Vamos tirar uma selfie</div>
+        <div class="selfie-subtitle">Posicione seu rosto no centro</div>
+        
+        <div class="hexagon-mask">
+            <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=600&auto=format&fit=crop" alt="Selfie">
+            <div class="scan-line"></div>
+        </div>
+        
+        <div class="timer" id="selfieTimer">28s</div>
+        <div class="selfie-instruction">Mova sua cabeça para cima e para baixo</div>
+        
+        <div style="flex: 1;"></div>
+        <div style="padding: 20px; width: 100%;">
+            <button class="btn-primary" id="btnFinishSelfie" onclick="confirmSelfie()" style="opacity: 0.5;" disabled>Concluir</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN: TERMOS DE USO -->
+    <div class="fullscreen" id="fsTerms">
+        <div class="fs-header">
+            <button class="fs-back" onclick="closeFullscreen('fsTerms')">←</button>
+            <div class="fs-title"></div>
+        </div>
+        <div class="fs-content terms-text">
+            <h3>CONDIÇÕES PARA A ABERTURA DA CONTA - PESSOA FÍSICA E PROSPECTO DE INFORMAÇÕES ESSENCIAIS DA CONTA</h3>
+            <p>Aqui Você encontrará as condições para abertura de contas de pagamento pré-paga no Banco e os principais direitos e responsabilidades de quem decide ter uma conta. É nosso compromisso de sermos transparentes com Você, sempre. Tudo explicado de um jeito que Você consiga entender.</p>
+            
+            <h3>Abertura da Conta</h3>
+            <p>Ao seguir com a abertura de conta, Você: (i) CONCORDA EXPRESSAMENTE com a abertura de contas de pagamento pré-pagas, de sua titularidade, bem como com a emissão de cartão virtual com função débito e, se aprovado, também com função crédito, que será contratado mediante aceite ao contrato específico de cartão de crédito; e (ii) se declara CIENTE de que o Banco poderá oferecer a Você a migração para uma única conta de depósitos à vista, o que será feito por meio do aceite ao contrato específico de abertura de conta corrente, podendo ser solicitadas informações e/ou documentos adicionais.</p>
+            
+            <h3>Como funciona a Conta</h3>
+            <p>A Conta é apenas sua, e só Você pode fazer movimentações nela. Todas as movimentações na Conta devem refletir uma compra ou transferência reais. Todas as informações que Você preencheu no cadastro devem ser verdadeiras e precisam estar atualizadas para podermos oferecer sempre os melhores serviços e experiências.</p>
+            <p>Para movimentar a sua Conta, Você deverá sempre fazer um aporte prévio em reais. Isto é, Você só poderá movimentar a sua Conta se ela tiver saldo.</p>
+        </div>
+        <div class="fs-footer">
+            <button class="btn-primary" onclick="acceptTerms()">Li e estou de acordo</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN: PRÓXIMOS PASSOS -->
+    <div class="fullscreen" id="fsNextSteps">
+        <div class="fs-header">
+            <button class="fs-back" onclick="location.reload()">✕</button>
+            <div class="fs-title">Próximos passos</div>
+        </div>
+        <div class="fs-content" style="align-items: center; text-align: center;">
+            <p style="font-size: 16px; margin-bottom: 32px; color: #ccc;">Suas informações já estão sendo analisadas. Em breve, responderemos você por e-mail e push.</p>
+            
+            <div class="timeline" style="text-align: left; width: 100%;">
+                <div class="tl-item done">
+                    <div class="tl-icon">✓</div>
+                    <div class="tl-content">
+                        <h4>Cadastro enviado</h4>
+                        <p>Envio da proposta de abertura de conta e dados pessoais para análise</p>
+                    </div>
+                </div>
+                <div class="tl-item active">
+                    <div class="tl-icon">...</div>
+                    <div class="tl-content">
+                        <h4>Análise do cadastro</h4>
+                        <p>Geralmente levamos poucos minutos para ter uma resposta.</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-icon"></div>
+                    <div class="tl-content">
+                        <h4>Análise concluída</h4>
+                        <p>Caso aprovado, escolha a cor do seu cartão e comece a aproveitar todos os benefícios.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <a href="#" style="color: var(--link); font-size: 14px; text-decoration: none;">O que analisamos?</a>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -325,63 +536,28 @@
         // ESTADO GLOBAL
         // ============================================================
         const state = {
-            step: 0,
-            tipo: '',
-            pais: 'Brasil',
-            docTipo: 'CPF',
-            docValor: '',
-            nomeReal: '',
-            nomeExibicao: '',
-            dataNasc: '',
+            type: '',
+            cpf: '',
+            name: '',
             email: '',
-            telefone: '',
-            profissao: '',
-            renda: '',
+            phone: '',
+            ddi: '55',
+            password: '',
             cep: '',
-            numero: '',
-            senha: '',
-            pin: '',
-            pinBuffer: ''
+            income: '',
+            referral: null
         };
 
         const chatContainer = document.getElementById('chatContainer');
+        const typing = document.getElementById('typing');
+        const chatInputArea = document.getElementById('chatInputArea');
         const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const eyeBtn = document.getElementById('eyeBtn');
-        const bottomSheet = document.getElementById('bottomSheet');
+        const bottomBtnArea = document.getElementById('bottomBtnArea');
+        const mainActionBtn = document.getElementById('mainActionBtn');
         const overlay = document.getElementById('overlay');
-        const sheetTitle = document.getElementById('sheetTitle');
-        const sheetSearch = document.getElementById('sheetSearch');
-        const sheetList = document.getElementById('sheetList');
-        const sheetCustomContent = document.getElementById('sheetCustomContent');
-
-        // Dados
-        const countries = {
-            'Brasil': { doc: 'CPF', mask: 'cpf', placeholder: '000.000.000-00' },
-            'Estados Unidos': { doc: 'SSN', mask: 'text', placeholder: '000-00-0000' },
-            'Portugal': { doc: 'NIF', mask: 'text', placeholder: '000000000' },
-            'Espanha': { doc: 'NIF', mask: 'text', placeholder: '00000000X' },
-            'Argentina': { doc: 'CUIT/CUIL', mask: 'text', placeholder: '00-00000000-0' },
-            'México': { doc: 'RFC', mask: 'text', placeholder: 'XAXX010101000' },
-            'Canadá': { doc: 'SIN', mask: 'text', placeholder: '000-000-000' }
-        };
-
-        const profissoes = [
-            "Advogado", "Engenheiro Civil", "Médico", "Enfermeiro", "Professor", "Dentista", "Arquiteto", "Contador", 
-            "Analista de Sistemas", "Desenvolvedor", "Designer", "Administrador", "Psicólogo", "Fisioterapeuta",
-            "Nutricionista", "Farmacêutico", "Veterinário", "Jornalista", "Publicitário", "Economista", "Piloto",
-            "Policial", "Bombeiro", "Militar", "Juiz", "Mecânico", "Eletricista", "Encanador", "Pedreiro", "Motorista",
-            "Entregador", "Vendedor", "Corretor", "Gerente", "Atendente", "Recepcionista", "Secretária", "Cozinheiro",
-            "Garçom", "Barbeiro", "Cabeleireiro", "Esteticista", "Fotógrafo", "Músico", "Escritor", "Tradutor",
-            "Biólogo", "Químico", "Físico", "Matemático", "Estatístico", "Geólogo", "Agricultor", "Pescador",
-            "Técnico em Informática", "Técnico em Enfermagem", "Bancário", "Auditor", "Personal Trainer", "Cientista de Dados",
-            "UX/UI Designer", "Product Manager", "Analista de RH", "Segurança", "Empresário", "Autônomo", "Estudante",
-            "Aposentado", "Do Lar", "Desempregado", "Outro"
-        ];
 
         // ============================================================
-        // MOTOR DO CHAT
+        // ENGINE DO CHAT
         // ============================================================
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -389,100 +565,71 @@
 
         function botSay(text, delay = 600) {
             return new Promise((resolve) => {
-                typingIndicator.classList.add('active');
+                typing.classList.add('active');
                 scrollToBottom();
                 setTimeout(() => {
-                    typingIndicator.classList.remove('active');
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'message-wrapper bot';
-                    wrapper.innerHTML = `
-                        <div class="bot-avatar">🤖</div>
-                        <div class="message bot">${text}</div>
-                    `;
-                    chatContainer.insertBefore(wrapper, typingIndicator);
+                    typing.classList.remove('active');
+                    const div = document.createElement('div');
+                    div.className = 'msg-group bot';
+                    div.innerHTML = `<div class="bubble bot">${text}</div>`;
+                    chatContainer.insertBefore(div, typing);
                     scrollToBottom();
                     resolve();
                 }, delay);
             });
         }
 
-        function userSay(text) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'message-wrapper user';
-            wrapper.innerHTML = `<div class="message user">${text}</div>`;
-            chatContainer.insertBefore(wrapper, typingIndicator);
+        function userSay(text, showChange = false) {
+            const div = document.createElement('div');
+            div.className = 'msg-group user';
+            div.innerHTML = `<div class="bubble user">${text}</div>`;
+            if (showChange) {
+                const change = document.createElement('div');
+                change.className = 'alterar-link';
+                change.innerText = 'Alterar';
+                change.onclick = () => {
+                    // Lógica para voltar à etapa de alteração (simplificada)
+                    alert('Função de alterar em desenvolvimento.');
+                };
+                div.appendChild(change);
+            }
+            chatContainer.insertBefore(div, typing);
             scrollToBottom();
         }
 
-        function enableInput(maskType = 'text', placeholder = 'Digite...') {
+        function showChatInput(maskType = 'text', placeholder = 'Digite...') {
+            chatInputArea.classList.add('active');
             chatInput.disabled = false;
-            sendBtn.disabled = false;
             chatInput.value = '';
             chatInput.focus();
             chatInput.dataset.mask = maskType;
             chatInput.placeholder = placeholder;
-            chatInput.type = maskType === 'password' ? 'password' : 'text';
-            eyeBtn.style.display = maskType === 'password' ? 'block' : 'none';
-            
-            // Aplica máscara caso já tenha
-            if (maskType === 'cpf') chatInput.placeholder = '000.000.000-00';
-            if (maskType === 'phone') chatInput.placeholder = '(11) 99999-9999';
-            if (maskType === 'cep') chatInput.placeholder = '00000-000';
-            if (maskType === 'date') chatInput.placeholder = 'DD/MM/AAAA';
         }
 
-        function disableInput() {
+        function hideChatInput() {
+            chatInputArea.classList.remove('active');
             chatInput.disabled = true;
-            sendBtn.disabled = true;
-            chatInput.placeholder = 'Aguarde...';
-            eyeBtn.style.display = 'none';
+        }
+
+        function showBottomBtn(text, action) {
+            bottomBtnArea.classList.add('active');
+            mainActionBtn.innerText = text;
+            mainActionBtn.onclick = action;
+            mainActionBtn.disabled = false;
+            mainActionBtn.style.opacity = '1';
+        }
+
+        function hideBottomBtn() {
+            bottomBtnArea.classList.remove('active');
         }
 
         // ============================================================
-        // CONTROLE DO BOTTOM SHEET (Gaveta)
-        // ============================================================
-        function openSheet(title, items, onSelect, showSearch = true) {
-            sheetTitle.textContent = title;
-            sheetList.innerHTML = '';
-            sheetCustomContent.innerHTML = '';
-            sheetSearch.value = '';
-            sheetSearch.style.display = showSearch ? 'block' : 'none';
-
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.textContent = item;
-                div.onclick = () => {
-                    closeSheet();
-                    onSelect(item);
-                };
-                sheetList.appendChild(div);
-            });
-
-            overlay.classList.add('active');
-            bottomSheet.classList.add('active');
-        }
-
-        function closeSheet() {
-            overlay.classList.remove('active');
-            bottomSheet.classList.remove('active');
-        }
-
-        function filterList() {
-            const query = sheetSearch.value.toLowerCase();
-            const items = sheetList.querySelectorAll('.list-item');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(query) ? 'block' : 'none';
-            });
-        }
-
-        // ============================================================
-        // MÁSCARAS
+        // MÁSCARAS DE INPUT
         // ============================================================
         chatInput.addEventListener('input', (e) => {
             const mask = chatInput.dataset.mask;
             let v = e.target.value;
+
             if (mask === 'cpf') {
                 v = v.replace(/\D/g, '').slice(0, 11);
                 v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -491,363 +638,452 @@
                 if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
                 else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
                 else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            } else if (mask === 'cep') {
-                v = v.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
-            } else if (mask === 'date') {
-                v = v.replace(/\D/g, '').slice(0, 8).replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+            } else if (mask === 'password') {
+                v = v.replace(/\D/g, '').slice(0, 6);
+            } else if (mask === 'money') {
+                v = v.replace(/\D/g, '');
+                if (v) {
+                    v = (parseInt(v) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                }
             }
             e.target.value = v;
         });
 
-        function togglePassword() {
-            chatInput.type = chatInput.type === 'password' ? 'text' : 'password';
-            eyeBtn.textContent = chatInput.type === 'password' ? '👁️' : '🙈';
-        }
-
-        // Simula KYC API
-        function simulateKYC() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    const nomes = ['João da Silva', 'Maria Eduarda Santos', 'Lucas Oliveira Costa', 'Ana Beatriz Souza'];
-                    resolve(nomes[Math.floor(Math.random() * nomes.length)]);
-                }, 1500);
-            });
-        }
-
-        function maskName(fullName) {
-            let parts = fullName.split(' ');
-            if (parts.length === 1) return parts[0][0] + '***';
-            return `${parts[0][0]}*** ${parts[parts.length - 1][0]}***`;
-        }
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+            }
+        });
 
         // ============================================================
-        // FLUXO DO CHAT (JORNADA)
+        // FLUXO LÓGICO DO CHAT
         // ============================================================
-        async function startFlow() {
-            await botSay('Olá! Seja bem-vindo ao <strong>MeuBanco</strong>.', 800);
-            await botSay('Para começarmos, qual tipo de conta você deseja abrir?', 500);
-            openSheet('Tipo de Conta', ['Pessoa Física (PF)', 'Pessoa Jurídica (PJ)'], (val) => {
-                state.tipo = val;
-                userSay(val);
-                askCountry();
-            }, false);
-        }
+        let currentStep = 0;
 
-        async function askCountry() {
-            await botSay('Selecione o seu país de nacionalidade:', 500);
-            openSheet('Selecione o País', Object.keys(countries), (val) => {
-                state.pais = val;
-                state.docTipo = countries[val].doc;
-                userSay(val);
-                askDocument();
-            });
-        }
-
-        async function askDocument() {
-            const config = countries[state.pais];
-            await botSay(`Digite o seu <strong>${config.doc}</strong> para iniciarmos a validação:`, 500);
-            enableInput(config.mask, config.placeholder);
-            state.step = 'doc';
-        }
-
-        async function handleDoc(doc) {
-            state.docValor = doc;
-            await botSay('Buscando informações nos bureaus de crédito...', 1500);
-            const nome = await simulateKYC();
-            state.nomeReal = nome;
-            const mascarado = maskName(nome);
-            await botSay(`Encontrei o titular <strong>${mascarado}</strong> vinculado a este documento.`);
+        window.onload = async () => {
+            await botSay('Olá! 😊', 400);
+            await botSay('Que bom ver você aqui!', 400);
+            await botSay('A abertura da sua conta é rápida, segura e leva poucos minutos.', 400);
+            await botSay('Primeiro, qual tipo de conta você quer abrir?', 600);
             
-            openSheet('Confirmação de Titular', ['Sim, está correto', 'Não, corrigir nome'], (val) => {
-                userSay(val);
-                if (val === 'Sim, está correto') {
-                    state.nomeExibicao = state.nomeReal;
-                    askBirthDate();
-                } else {
-                    askCorrectName();
-                }
-            }, false);
-        }
-
-        async function askCorrectName() {
-            await botSay('Por favor, digite seu nome completo:', 400);
-            enableInput('text', 'Nome completo');
-            state.step = 'nome_correcao';
-        }
-
-        async function askBirthDate() {
-            await botSay('Agora, informe sua data de nascimento:', 400);
-            enableInput('date', 'DD/MM/AAAA');
-            state.step = 'data_nasc';
-        }
-
-        async function askEmail() {
-            await botSay('Qual é o seu melhor e-mail?', 400);
-            enableInput('text', 'seu@email.com');
-            state.step = 'email';
-        }
-
-        async function askPhone() {
-            await botSay('E o seu número de celular (com DDD)?', 400);
-            enableInput('phone', '(11) 99999-9999');
-            state.step = 'phone';
-        }
-
-        async function askProfession() {
-            await botSay('Para entender seu perfil, qual é a sua profissão?', 400);
-            openSheet('Selecione sua Profissão', profissoes, (val) => {
-                state.profissao = val;
-                userSay(val);
-                askIncome();
-            });
-        }
-
-        async function askIncome() {
-            await botSay('Qual é a sua renda mensal aproximada?', 400);
-            openSheet('Faixa de Renda', ['Até R$ 2.000', 'R$ 2.001 a R$ 5.000', 'R$ 5.001 a R$ 10.000', 'Acima de R$ 10.000'], (val) => {
-                state.renda = val;
-                userSay(val);
-                askDocUpload();
-            }, false);
-        }
-
-        // --- UPLOAD DE DOCUMENTO ---
-        async function askDocUpload() {
-            await botSay('Para segurança, precisamos que você envie uma foto da <strong>frente</strong> do seu documento.', 500);
-            
-            sheetCustomContent.innerHTML = `
-                <label class="camera-area">
-                    <input type="file" accept="image/*" capture="environment" onchange="handleFileUpload(this)">
-                    <div style="font-size: 32px; margin-bottom: 8px;">📸</div>
-                    <div style="font-weight: 600;">Tirar Foto ou Escolher</div>
-                </label>
-            `;
-            openSheet('Envio de Documento', [], null, false);
-        }
-
-        window.handleFileUpload = (input) => {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    // Fecha a gaveta de upload
-                    closeSheet();
-                    
-                    // Adiciona mensagem do usuário
-                    userSay('📎 Foto do documento enviada');
-                    
-                    // Mostra o preview borrado no chat
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'message-wrapper user';
-                    wrapper.innerHTML = `
-                        <div class="message user" style="padding: 8px; background: transparent;">
-                            <div class="preview-container active" style="margin:0;">
-                                <img src="${e.target.result}" class="img-preview" id="uploadedImg">
-                                <div style="display: flex; gap: 8px; margin-top: 8px;">
-                                    <button onclick="askDocUpload()" style="flex:1; background:var(--surface-light); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600;">Editar</button>
-                                    <button onclick="confirmDocUpload(this)" style="flex:1; background:var(--primary); color:#000; border:none; padding:12px; border-radius:8px; font-weight:600;">Confirmar</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    chatContainer.insertBefore(wrapper, typingIndicator);
-                    scrollToBottom();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            // Abre o Bottom Sheet
+            openSheet('sheetAccountType');
         };
 
-        window.confirmDocUpload = (btn) => {
-            const img = document.getElementById('uploadedImg');
-            if (img) {
-                img.style.filter = 'blur(20px)'; // Aumenta o blur
-                btn.parentElement.parentElement.innerHTML = '<div style="padding:10px; color:var(--success); font-weight:600;">✅ Documento Validado</div>';
-                askSelfie();
-            }
-        };
-
-        // --- RECONHECIMENTO FACIAL ---
-        async function askSelfie() {
-            await botSay('Agora, precisamos validar que é você. Posicione seu rosto no centro para a biometria.', 800);
+        // --- PASSO 1: TIPO DE CONTA ---
+        let selectedType = '';
+        function selectAccountType(type, element) {
+            selectedType = type === 'PF' ? 'Pessoa Física (PF)' : 'Pessoa Jurídica (PJ)';
+            document.querySelectorAll('#sheetAccountType .option-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
             
-            sheetCustomContent.innerHTML = `
-                <div style="text-align: center;">
-                    <div class="face-scanner">
-                        <img src="https://via.placeholder.com/240/333333/ffffff?text=👤" alt="Rosto">
-                    </div>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">Capturando biometria facial...</p>
-                    <button id="btnSelfieDone" style="display:none; width: 100%; padding: 16px; border-radius: 30px; background: var(--primary); border: none; font-weight: bold; font-size: 16px;" onclick="finishSelfie()">Concluir Captura</button>
-                </div>
-            `;
-            openSheet('Validação Facial', [], null, false);
-            
-            // Simula o tempo do scanner
-            setTimeout(() => {
-                document.getElementById('btnSelfieDone').style.display = 'block';
-            }, 3000);
+            const btn = document.getElementById('btnConfirmType');
+            btn.disabled = false;
+            btn.style.opacity = '1';
         }
 
-        window.finishSelfie = () => {
+        function confirmAccountType() {
             closeSheet();
-            userSay('📸 Biometria facial capturada');
-            askCep();
-        };
-
-        // --- ENDEREÇO ---
-        async function askCep() {
-            await botSay('Certo! Agora digite seu CEP para preencher o endereço.', 500);
-            enableInput('cep', '00000-000');
-            state.step = 'cep';
+            userSay(`Abrir uma conta ${selectedType.includes('PF') ? 'pessoal (PF)' : 'empresarial (PJ)'}`, true);
+            state.type = selectedType;
+            
+            setTimeout(async () => {
+                await botSay('As contas do nosso banco são para clientes acima de 18 anos e ficam vinculadas ao CPF, tanto a conta pessoal quanto a empresarial.', 800);
+                await botSay('Por isso, digite o número do seu CPF.');
+                showChatInput('cpf', 'Digite seu CPF...');
+                currentStep = 1;
+            }, 500);
         }
 
-        async function handleCep(cep) {
-            const cleanCep = cep.replace(/\D/g,'');
-            if (cleanCep.length !== 8) {
-                botSay('CEP inválido. Tente novamente:');
+        // --- PASSO 2: CPF ---
+        async function processCPF(cpf) {
+            if (cpf.length < 14) {
+                await botSay('CPF inválido. Por favor, digite novamente.');
+                showChatInput('cpf', 'Digite seu CPF...');
                 return;
             }
-            await botSay('Buscando endereço via ViaCEP...', 1000);
+            state.cpf = cpf;
+            await botSay('Validando suas informações...', 1000);
+            
+            // Simula retorno da API
+            state.name = 'Janete Aparecida';
+            await botSay('Como podemos chamar você?');
+            await botSay('Pode ser seu primeiro nome ou apelido.');
+            
+            showChatInput('text', 'Digite seu nome...');
+            currentStep = 2;
+        }
+
+        // --- PASSO 3: NOME ---
+        async function processName(name) {
+            state.name = name;
+            await botSay('Para continuar, você precisa aceitar os Termos de Uso e Política de Privacidade.');
+            
+            // Muda o botão inferior
+            hideChatInput();
+            showBottomBtn('Li e estou de acordo', () => {
+                hideBottomBtn();
+                openFullscreen('fsTerms');
+            });
+        }
+
+        // --- PASSO 4: TERMOS ---
+        function acceptTerms() {
+            closeFullscreen('fsTerms');
+            userSay('Li e estou de acordo');
+            setTimeout(async () => {
+                await botSay('Qual seu e-mail pessoal?');
+                showChatInput('text', 'Digite seu e-mail...');
+                currentStep = 3;
+            }, 500);
+        }
+
+        // --- PASSO 5: EMAIL ---
+        async function processEmail(email) {
+            if (!email.includes('@')) {
+                await botSay('E-mail inválido. Digite novamente.');
+                showChatInput('text', 'Digite seu e-mail...');
+                return;
+            }
+            state.email = email;
+            await botSay('E qual é o número do seu celular?');
+            
+            // Mostra um input especial com DDI
+            hideChatInput();
+            bottomBtnArea.innerHTML = `
+                <div style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 8px 16px; border-radius: 30px; border: 1px solid #333;">
+                    <div style="display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="openSheet('sheetDDI')">
+                        <span>🇧🇷</span> <span>+55</span> <span>▼</span>
+                    </div>
+                    <div style="width: 1px; height: 24px; background: #444; margin: 0 8px;"></div>
+                    <input type="tel" id="inlinePhoneInput" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 16px; outline: none;" placeholder="(44) 99999-9999">
+                    <button style="background: var(--primary); border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="submitPhone()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            `;
+            bottomBtnArea.classList.add('active');
+            
+            // Aplica máscara
+            const phoneInput = document.getElementById('inlinePhoneInput');
+            phoneInput.addEventListener('input', (e) => {
+                let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+                if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                e.target.value = v;
+            });
+            phoneInput.focus();
+            currentStep = 4;
+        }
+
+        function submitPhone() {
+            const val = document.getElementById('inlinePhoneInput').value;
+            if (val.length < 14) {
+                alert('Número inválido');
+                return;
+            }
+            state.phone = val;
+            
+            // Restaura o botão padrão
+            bottomBtnArea.innerHTML = `<button class="btn-primary" id="mainActionBtn">Selecionar</button>`;
+            mainActionBtn = document.getElementById('mainActionBtn'); // Atualiza a referência
+            
+            userSay(val, true);
+            bottomBtnArea.classList.remove('active');
+            
+            setTimeout(async () => {
+                await botSay('Agora, crie uma senha de 6 números para acessar o app.');
+                await botSay('Ela será diferente da senha transacional e do seu cartão.');
+                await botSay('Uma dica: Não use números sequenciais, como 123456, a data do seu aniversário ou senha de desbloqueio do celular.');
+                showChatInput('password', 'Digite sua senha...');
+                currentStep = 5;
+            }, 500);
+        }
+
+        // --- PASSO 6: SENHA ---
+        async function processPassword(pwd) {
+            if (pwd.length !== 6) {
+                await botSay('A senha deve ter exatamente 6 números.');
+                showChatInput('password', 'Digite sua senha...');
+                return;
+            }
+            state.password = pwd;
+            userSay('🔒 ••••••', true);
+            
+            await botSay('Vamos continuar com o cadastro do seu endereço residencial. Qual seu CEP?');
+            showChatInput('cep', '00000-000');
+            currentStep = 6;
+        }
+
+        // --- PASSO 7: CEP ---
+        async function processCEP(cep) {
+            const cleanCep = cep.replace(/\D/g, '');
+            if (cleanCep.length !== 8) {
+                await botSay('CEP inválido. Digite novamente.');
+                showChatInput('cep', '00000-000');
+                return;
+            }
+            state.cep = cep;
+            userSay(cep, true);
+            hideChatInput();
+            
+            // Busca o CEP
             try {
                 const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
                 const data = await res.json();
                 if (data.erro) {
-                    botSay('CEP não encontrado. Tente novamente:');
+                    await botSay('CEP não encontrado. Tente novamente.');
+                    showChatInput('cep', '00000-000');
                     return;
                 }
-                state.cep = cep;
-                await botSay(`Encontrei: <strong>${data.logradouro}</strong>, ${data.bairro}, ${data.localidade} - ${data.uf}.`);
-                await botSay('Qual o número da sua residência?', 400);
-                enableInput('text', 'Ex: 123');
-                state.step = 'numero';
+                
+                // Preenche a tela cheia
+                document.getElementById('endCep').value = cep;
+                document.getElementById('endRua').value = data.logradouro;
+                document.getElementById('endBairro').value = data.bairro;
+                document.getElementById('endEstado').value = data.uf;
+                
+                openFullscreen('fsAddress');
+                document.getElementById('endNumero').focus();
+                
             } catch (e) {
-                botSay('Erro de rede. Digite o CEP novamente:');
+                await botSay('Erro ao buscar CEP. Tente novamente.');
+                showChatInput('cep', '00000-000');
             }
         }
 
-        // --- SENHA E PIN ---
-        async function askPassword() {
-            await botSay('Quase lá! Crie uma senha de acesso segura (mínimo 8 caracteres).', 500);
-            enableInput('password', 'Senha (min. 8 caracteres)');
-            state.step = 'senha';
+        function confirmAddress() {
+            const num = document.getElementById('endNumero').value;
+            if (!num) {
+                document.getElementById('groupNumero').classList.add('error');
+                return;
+            }
+            document.getElementById('groupNumero').classList.remove('error');
+            
+            closeFullscreen('fsAddress');
+            
+            const fullAddress = `${document.getElementById('endRua').value}, ${num} - ${document.getElementById('endBairro').value}, ${document.getElementById('endEstado').value}`;
+            userSay(fullAddress, true);
+            
+            setTimeout(async () => {
+                await botSay('Endereço cadastrado.');
+                await botSay('Qual seu salário ou quanto você recebe por mês?');
+                await botSay('Digite apenas a sua renda mensal, sem considerar o valor de outras pessoas da sua família.');
+                showChatInput('money', 'R$ 0,00');
+                currentStep = 7;
+            }, 500);
         }
 
-        async function askPin() {
-            await botSay('Por fim, crie um PIN de 4 dígitos para transações.', 500);
+        // --- PASSO 8: RENDA ---
+        async function processIncome(income) {
+            state.income = income;
+            userSay(income, true);
             
-            // Configura o teclado numérico customizado
-            state.pinBuffer = '';
-            sheetCustomContent.innerHTML = `
-                <div class="pin-display" id="pinDisplay">
-                    <div class="pin-dot"></div><div class="pin-dot"></div>
-                    <div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
-                <div class="keypad" id="keypad">
-                    ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="pressPin('${n}')">${n}</button>`).join('')}
-                    <button class="key del" onclick="deletePin()">⌫</button>
-                    <button class="key" onclick="pressPin('0')">0</button>
-                    <button class="key" style="visibility:hidden;">#</button>
+            await botSay('Para continuar, envie uma selfie para confirmar quem é você. Ela não será utilizada como foto de perfil.');
+            await botSay('O acesso à câmera do seu celular é necessário para seguir com essa etapa.');
+            
+            hideChatInput();
+            showBottomBtn('Tirar foto', () => {
+                hideBottomBtn();
+                openFullscreen('fsSelfie');
+                startSelfieTimer();
+            });
+        }
+
+        // --- PASSO 9: SELFIE ---
+        let selfieInterval;
+        function startSelfieTimer() {
+            let time = 5;
+            const timerEl = document.getElementById('selfieTimer');
+            const btn = document.getElementById('btnFinishSelfie');
+            
+            timerEl.innerText = `${time}s`;
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            
+            clearInterval(selfieInterval);
+            selfieInterval = setInterval(() => {
+                time--;
+                timerEl.innerText = `${time}s`;
+                if (time <= 0) {
+                    clearInterval(selfieInterval);
+                    timerEl.innerText = 'Concluído';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            }, 1000);
+        }
+
+        function confirmSelfie() {
+            closeFullscreen('fsSelfie');
+            userSay('Selfie enviada');
+            
+            setTimeout(async () => {
+                await botSay('Você tem um convite ou código de indicação para abertura de conta?');
+                hideChatInput();
+                
+                // Dois botões (Não / Sim)
+                bottomBtnArea.innerHTML = `
+                    <div class="bottom-btn-group">
+                        <button class="btn-secondary" onclick="processReferral(false)">Não</button>
+                        <button class="btn-primary" onclick="processReferral(true)">Sim</button>
+                    </div>
+                `;
+                bottomBtnArea.classList.add('active');
+            }, 500);
+        }
+
+        // --- PASSO 10: INDICAÇÃO ---
+        function processReferral(hasReferral) {
+            state.referral = hasReferral;
+            userSay(hasReferral ? 'Sim' : 'Não');
+            
+            // Restaura botão único
+            bottomBtnArea.innerHTML = `<button class="btn-primary" id="mainActionBtn">Ver proposta</button>`;
+            bottomBtnArea.classList.add('active');
+            
+            const btn = document.getElementById('mainActionBtn');
+            btn.onclick = () => {
+                bottomBtnArea.classList.remove('active');
+                showProgressBar();
+            };
+        }
+
+        // --- PASSO 11: ENVIO E FINAL ---
+        async function showProgressBar() {
+            await botSay('Para terminar, você precisa aceitar os termos de abertura de conta.');
+            
+            // Simula envio de dados com barra de progresso
+            const div = document.createElement('div');
+            div.className = 'msg-group user';
+            div.innerHTML = `
+                <div class="bubble user" style="width: 250px; text-align: center;">
+                    <div>Enviando meus dados...</div>
+                    <div style="width: 100%; height: 6px; background: #ddd; border-radius: 3px; margin-top: 12px; overflow: hidden;">
+                        <div id="progressBar" style="width: 0%; height: 100%; background: #00ff00; transition: width 0.1s;"></div>
+                    </div>
                 </div>
             `;
-            openSheet('Criar PIN de Acesso', [], null, false);
-        }
+            chatContainer.insertBefore(div, typing);
+            scrollToBottom();
 
-        window.pressPin = (num) => {
-            if (state.pinBuffer.length < 4) {
-                state.pinBuffer += num;
-                updatePinDots();
-            }
-        };
-
-        window.deletePin = () => {
-            if (state.pinBuffer.length > 0) {
-                state.pinBuffer = state.pinBuffer.slice(0, -1);
-                updatePinDots();
-            }
-        };
-
-        function updatePinDots() {
-            const dots = document.querySelectorAll('.pin-dot');
-            dots.forEach((dot, index) => {
-                if (index < state.pinBuffer.length) dot.classList.add('filled');
-                else dot.classList.remove('filled');
-            });
-
-            if (state.pinBuffer.length === 4) {
-                setTimeout(() => {
-                    state.pin = state.pinBuffer;
-                    closeSheet();
-                    userSay('🔒 PIN de 4 dígitos criado');
-                    askTerms();
-                }, 300);
-            }
-        }
-
-        async function askTerms() {
-            await botSay('Você aceita os Termos de Uso e a Política de Privacidade do MeuBanco?', 500);
-            openSheet('Termos e Privacidade', ['Aceito os termos', 'Não aceito'], (val) => {
-                userSay(val);
-                if (val === 'Aceito os termos') {
-                    finishFlow();
-                } else {
-                    botSay('Infelizmente não podemos prosseguir sem o aceite dos termos.');
-                    disableInput();
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(async () => {
+                        await botSay('Pronto!', 300);
+                        await botSay('Vamos analisar essas informações e te responderemos em breve, por e-mail e push no seu celular.', 600);
+                        await botSay('Obrigado por escolher o nosso banco. 💛', 600);
+                        
+                        showBottomBtn('Mostrar próximos passos', () => {
+                            hideBottomBtn();
+                            openFullscreen('fsNextSteps');
+                        });
+                    }, 500);
                 }
-            }, false);
+            }, 200);
         }
 
         // ============================================================
-        // FINALIZAÇÃO E INPUT DO TECLADO
+        // FUNÇÃO GENÉRICA DE ENVIO DO CHAT
         // ============================================================
-        function processInput() {
-            const value = chatInput.value.trim();
-            if (!value) return;
-
-            userSay(value);
+        function handleSend() {
+            const val = chatInput.value.trim();
+            if (!val) return;
+            
             chatInput.value = '';
-            disableInput();
-
-            switch (state.step) {
-                case 'doc': handleDoc(value); break;
-                case 'nome_correcao': state.nomeExibicao = value; askBirthDate(); break;
-                case 'data_nasc': state.dataNasc = value; askEmail(); break;
-                case 'email': state.email = value; askPhone(); break;
-                case 'phone': state.telefone = value; askProfession(); break;
-                case 'cep': handleCep(value); break;
-                case 'numero': state.numero = value; askPassword(); break;
-                case 'senha':
-                    if (value.length < 8) {
-                        botSay('A senha deve ter no mínimo 8 caracteres.');
-                        enableInput('password', 'Senha (min. 8 caracteres)');
-                    } else {
-                        state.senha = value;
-                        askPin();
-                    }
-                    break;
+            hideChatInput();
+            
+            switch (currentStep) {
+                case 1: processCPF(val); break;
+                case 2: processName(val); break;
+                case 3: processEmail(val); break;
+                case 5: processPassword(val); break;
+                case 6: processCEP(val); break;
+                case 7: processIncome(val); break;
             }
         }
 
-        sendBtn.addEventListener('click', processInput);
-        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processInput(); });
-
-        async function finishFlow() {
-            await botSay('Perfeito. Estamos processando sua conta em nosso servidor seguro...', 1500);
-            await botSay('Análise antifraude concluída com sucesso.', 1000);
-            
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('inputArea').style.display = 'none';
-            
-            document.getElementById('resNome').textContent = state.nomeExibicao;
-            document.getElementById('resConta').textContent = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9)}`;
-            document.getElementById('resTipo').textContent = state.tipo;
-            document.getElementById('resData').textContent = new Date().toLocaleDateString('pt-BR');
-            
-            document.getElementById('successScreen').classList.add('active');
+        // ============================================================
+        // FUNÇÕES DE UI (MODAIS / TELAS)
+        // ============================================================
+        function openSheet(id) {
+            document.getElementById(id).classList.add('active');
+            overlay.classList.add('active');
         }
 
-        // INICIALIZA
-        window.onload = () => {
-            disableInput();
-            startFlow();
-        };
+        function closeSheet() {
+            document.querySelectorAll('.sheet').forEach(el => el.classList.remove('active'));
+            overlay.classList.remove('active');
+        }
+
+        function openFullscreen(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeFullscreen(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // ============================================================
+        // LISTA DE DDI (Países)
+        // ============================================================
+        const countriesDDI = [
+            { flag: '🇧🇷', name: 'Brasil', code: '55' },
+            { flag: '🇺🇸', name: 'Estados Unidos', code: '1' },
+            { flag: '🇵🇹', name: 'Portugal', code: '351' },
+            { flag: '🇩🇪', name: 'Alemanha', code: '49' },
+            { flag: '🇮🇪', name: 'Irlanda', code: '353' },
+            { flag: '🇬🇧', name: 'Reino Unido', code: '44' },
+            { flag: '🇨🇦', name: 'Canadá', code: '1' },
+            { flag: '🇪🇸', name: 'Espanha', code: '34' },
+            { flag: '🇳🇱', name: 'Países Baixos', code: '31' },
+            { flag: '🇫🇷', name: 'França', code: '33' }
+        ];
+
+        function renderDDIList(filter = '') {
+            const list = document.getElementById('ddiList');
+            list.innerHTML = '';
+            countriesDDI.filter(c => c.name.toLowerCase().includes(filter.toLowerCase())).forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.style.borderBottom = '1px solid #333';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="font-size: 24px;">${c.flag}</span>
+                        <span style="font-size: 16px;">${c.name}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #888;">+${c.code}</span>
+                        <span style="color: #555;">›</span>
+                    </div>
+                `;
+                div.onclick = () => {
+                    // Atualiza o DDI no input (simplificado)
+                    const ddiContainer = document.querySelector('div[onclick="openSheet(\\'sheetDDI\\')"]');
+                    if(ddiContainer) {
+                        ddiContainer.innerHTML = `<span>${c.flag}</span> <span>+${c.code}</span> <span>▼</span>`;
+                    }
+                    closeSheet();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        function filterDDI() {
+            const val = document.getElementById('searchDDI').value;
+            renderDDIList(val);
+        }
+
+        // Inicializa a lista de DDI
+        renderDDIList();
     </script>
 </body>
 </html>
