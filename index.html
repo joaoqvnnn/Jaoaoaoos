@@ -12,7 +12,7 @@
             --chat-user: #ffffff;
             --text-bot: #ffffff;
             --text-user: #000000;
-            --primary: #ffde00; /* Amarelo do botão */
+            --primary: #ffde00;
             --primary-dark: #e6c800;
             --text-muted: #8e8e93;
             --link: #2f8fff;
@@ -57,10 +57,6 @@
             transition: background 0.2s;
         }
         .close-btn:active { background: #222; }
-        .header-title {
-            flex: 1; text-align: center; font-size: 16px; font-weight: 600;
-            display: none;
-        }
 
         /* ===== ÁREA DO CHAT ===== */
         .chat-container {
@@ -75,7 +71,7 @@
         }
         .chat-container::-webkit-scrollbar { display: none; }
 
-        .msg-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .msg-group { display: flex; flex-direction: column; margin-bottom: 12px; width: 100%; }
         .msg-group.bot { align-items: flex-start; }
         .msg-group.user { align-items: flex-end; }
 
@@ -101,14 +97,13 @@
             font-weight: 500;
             margin-bottom: 4px;
         }
-        .bubble strong { font-weight: 700; }
         
         .alterar-link {
             color: var(--link);
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            margin-top: 4px;
+            margin-top: 2px;
             padding: 4px;
         }
 
@@ -175,12 +170,13 @@
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             transition: transform 0.1s;
+            color: #000;
         }
         .send-btn:active { transform: scale(0.9); }
-        .send-btn svg { width: 20px; height: 20px; fill: #000; }
-        .send-btn:disabled { background: #333; cursor: not-allowed; }
+        .send-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .send-btn:disabled { background: #333; cursor: not-allowed; color: #888; }
 
-        /* ===== BOTÃO FIXO INFERIOR (Amarelo) ===== */
+        /* ===== BOTÃO FIXO INFERIOR ===== */
         .bottom-btn-area {
             padding: 12px 20px 24px;
             background: var(--bg);
@@ -249,7 +245,7 @@
             content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--primary);
         }
 
-        /* ===== TELAS CHEIAS (Endereço, Selfie, Termos, Timeline) ===== */
+        /* ===== TELAS CHEIAS ===== */
         .fullscreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg);
@@ -276,7 +272,6 @@
             display: flex; flex-direction: column;
         }
         
-        /* Formulário de Endereço */
         .input-group { margin-bottom: 24px; position: relative; }
         .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
         .input-group input {
@@ -325,7 +320,7 @@
         .terms-text { font-size: 13px; color: #ccc; line-height: 1.5; text-align: justify; }
         .terms-text h3 { color: #fff; margin: 16px 0 8px; font-size: 14px; }
         
-        /* Timeline (Próximos Passos) */
+        /* Timeline */
         .timeline { display: flex; flex-direction: column; margin-top: 20px; }
         .tl-item { display: flex; gap: 16px; margin-bottom: 24px; position: relative; }
         .tl-item::before {
@@ -344,15 +339,13 @@
         .tl-content p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
         .tl-item.done .tl-content h4 { color: #fff; }
         .tl-item.active .tl-content h4 { color: var(--primary); }
-
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
     <div class="header">
-        <button class="close-btn" onclick="if(confirm('Deseja cancelar a abertura de conta?')) location.reload()">✕</button>
-        <div class="header-title" id="headerTitle"></div>
+        <button class="close-btn" onclick="if(confirm('Deseja cancelar?')) location.reload()">✕</button>
     </div>
 
     <!-- CHAT -->
@@ -360,7 +353,7 @@
         <div class="typing" id="typing"><span></span><span></span><span></span></div>
     </div>
 
-    <!-- CHAT INPUT (Oculto até necessário) -->
+    <!-- CHAT INPUT -->
     <div class="chat-input-area" id="chatInputArea">
         <div class="input-box">
             <input type="text" id="chatInput" placeholder="Digite..." autocomplete="off">
@@ -370,15 +363,15 @@
         </button>
     </div>
 
-    <!-- BOTTOM BUTTON AREA (Oculto até necessário) -->
+    <!-- BOTTOM BUTTON AREA -->
     <div class="bottom-btn-area" id="bottomBtnArea">
         <button class="btn-primary" id="mainActionBtn">Selecionar</button>
     </div>
 
-    <!-- OVERLAY (Para os Modais) -->
+    <!-- OVERLAY -->
     <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 
-    <!-- BOTTOM SHEET 1: SELEÇÃO DE CONTA -->
+    <!-- SHEET: CONTA -->
     <div class="sheet" id="sheetAccountType">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Que tipo de conta você quer abrir?</div>
@@ -395,7 +388,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM SHEET 2: DDI (Países) -->
+    <!-- SHEET: DDI -->
     <div class="sheet" id="sheetDDI" style="height: 80vh;">
         <div class="sheet-handle"></div>
         <div class="sheet-title" style="text-align: left; margin-bottom: 12px;">Selecione o DDI do seu celular</div>
@@ -403,9 +396,7 @@
             <span style="margin-right: 8px;">🔍</span>
             <input type="text" id="searchDDI" placeholder="Buscar por país ou região" style="font-size: 16px;" oninput="filterDDI()">
         </div>
-        <div style="overflow-y: auto; flex: 1;" id="ddiList">
-            <!-- Preenchido via JS -->
-        </div>
+        <div style="overflow-y: auto; flex: 1;" id="ddiList"></div>
     </div>
 
     <!-- FULLSCREEN: ENDEREÇO -->
@@ -416,7 +407,6 @@
         </div>
         <div class="fs-content">
             <p style="font-size: 14px; margin-bottom: 24px; color: #ccc;">Verifique os dados abaixo e preencha os campos restantes.</p>
-            
             <div class="input-group">
                 <label>CEP</label>
                 <input type="text" id="endCep" readonly>
@@ -461,7 +451,7 @@
             <div class="scan-line"></div>
         </div>
         
-        <div class="timer" id="selfieTimer">28s</div>
+        <div class="timer" id="selfieTimer">5s</div>
         <div class="selfie-instruction">Mova sua cabeça para cima e para baixo</div>
         
         <div style="flex: 1;"></div>
@@ -470,22 +460,19 @@
         </div>
     </div>
 
-    <!-- FULLSCREEN: TERMOS DE USO -->
+    <!-- FULLSCREEN: TERMOS -->
     <div class="fullscreen" id="fsTerms">
         <div class="fs-header">
             <button class="fs-back" onclick="closeFullscreen('fsTerms')">←</button>
             <div class="fs-title"></div>
         </div>
         <div class="fs-content terms-text">
-            <h3>CONDIÇÕES PARA A ABERTURA DA CONTA - PESSOA FÍSICA E PROSPECTO DE INFORMAÇÕES ESSENCIAIS DA CONTA</h3>
-            <p>Aqui Você encontrará as condições para abertura de contas de pagamento pré-paga no Banco e os principais direitos e responsabilidades de quem decide ter uma conta. É nosso compromisso de sermos transparentes com Você, sempre. Tudo explicado de um jeito que Você consiga entender.</p>
-            
+            <h3>CONDIÇÕES PARA A ABERTURA DA CONTA</h3>
+            <p>Aqui Você encontrará as condições para abertura de contas de pagamento pré-paga no Banco e os principais direitos e responsabilidades de quem decide ter uma conta.</p>
             <h3>Abertura da Conta</h3>
-            <p>Ao seguir com a abertura de conta, Você: (i) CONCORDA EXPRESSAMENTE com a abertura de contas de pagamento pré-pagas, de sua titularidade, bem como com a emissão de cartão virtual com função débito e, se aprovado, também com função crédito, que será contratado mediante aceite ao contrato específico de cartão de crédito; e (ii) se declara CIENTE de que o Banco poderá oferecer a Você a migração para uma única conta de depósitos à vista, o que será feito por meio do aceite ao contrato específico de abertura de conta corrente, podendo ser solicitadas informações e/ou documentos adicionais.</p>
-            
+            <p>Ao seguir com a abertura de conta, Você CONCORDA EXPRESSAMENTE com a abertura de contas de pagamento pré-pagas, de sua titularidade, bem como com a emissão de cartão virtual com função débito e, se aprovado, também com função crédito.</p>
             <h3>Como funciona a Conta</h3>
-            <p>A Conta é apenas sua, e só Você pode fazer movimentações nela. Todas as movimentações na Conta devem refletir uma compra ou transferência reais. Todas as informações que Você preencheu no cadastro devem ser verdadeiras e precisam estar atualizadas para podermos oferecer sempre os melhores serviços e experiências.</p>
-            <p>Para movimentar a sua Conta, Você deverá sempre fazer um aporte prévio em reais. Isto é, Você só poderá movimentar a sua Conta se ela tiver saldo.</p>
+            <p>A Conta é apenas sua, e só Você pode fazer movimentações nela. Todas as movimentações na Conta devem refletir uma compra ou transferência reais. Todas as informações que Você preencheu no cadastro devem ser verdadeiras.</p>
         </div>
         <div class="fs-footer">
             <button class="btn-primary" onclick="acceptTerms()">Li e estou de acordo</button>
@@ -524,44 +511,28 @@
                     </div>
                 </div>
             </div>
-            
-            <div style="margin-top: 40px;">
-                <a href="#" style="color: var(--link); font-size: 14px; text-decoration: none;">O que analisamos?</a>
-            </div>
         </div>
     </div>
 
     <script>
-        // ============================================================
-        // ESTADO GLOBAL
-        // ============================================================
-        const state = {
-            type: '',
-            cpf: '',
-            name: '',
-            email: '',
-            phone: '',
-            ddi: '55',
-            password: '',
-            cep: '',
-            income: '',
-            referral: null
-        };
-
+        // ==========================================
+        // ESTADO E REFERÊNCIAS DO DOM
+        // ==========================================
+        let mainActionBtn = document.getElementById('mainActionBtn'); // 'let' evita erro de reatribuição
+        
+        const state = { type: '', cpf: '', name: '', email: '', phone: '', ddi: '55', password: '', cep: '', income: '' };
         const chatContainer = document.getElementById('chatContainer');
         const typing = document.getElementById('typing');
         const chatInputArea = document.getElementById('chatInputArea');
         const chatInput = document.getElementById('chatInput');
         const bottomBtnArea = document.getElementById('bottomBtnArea');
-        const mainActionBtn = document.getElementById('mainActionBtn');
-        const overlay = document.getElementById('overlay');
 
-        // ============================================================
-        // ENGINE DO CHAT
-        // ============================================================
-        function scrollToBottom() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+        let currentStep = 0;
+
+        // ==========================================
+        // FUNÇÕES BÁSICAS DO CHAT
+        // ==========================================
+        function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }
 
         function botSay(text, delay = 600) {
             return new Promise((resolve) => {
@@ -587,17 +558,14 @@
                 const change = document.createElement('div');
                 change.className = 'alterar-link';
                 change.innerText = 'Alterar';
-                change.onclick = () => {
-                    // Lógica para voltar à etapa de alteração (simplificada)
-                    alert('Função de alterar em desenvolvimento.');
-                };
+                change.onclick = () => alert('Função em desenvolvimento.');
                 div.appendChild(change);
             }
             chatContainer.insertBefore(div, typing);
             scrollToBottom();
         }
 
-        function showChatInput(maskType = 'text', placeholder = 'Digite...') {
+        function showChatInput(maskType, placeholder) {
             chatInputArea.classList.add('active');
             chatInput.disabled = false;
             chatInput.value = '';
@@ -606,26 +574,23 @@
             chatInput.placeholder = placeholder;
         }
 
-        function hideChatInput() {
-            chatInputArea.classList.remove('active');
-            chatInput.disabled = true;
-        }
+        function hideChatInput() { chatInputArea.classList.remove('active'); }
 
         function showBottomBtn(text, action) {
             bottomBtnArea.classList.add('active');
-            mainActionBtn.innerText = text;
-            mainActionBtn.onclick = action;
-            mainActionBtn.disabled = false;
-            mainActionBtn.style.opacity = '1';
+            if (mainActionBtn) {
+                mainActionBtn.innerText = text;
+                mainActionBtn.onclick = action;
+                mainActionBtn.disabled = false;
+                mainActionBtn.style.opacity = '1';
+            }
         }
 
-        function hideBottomBtn() {
-            bottomBtnArea.classList.remove('active');
-        }
+        function hideBottomBtn() { bottomBtnArea.classList.remove('active'); }
 
-        // ============================================================
-        // MÁSCARAS DE INPUT
-        // ============================================================
+        // ==========================================
+        // MÁSCARAS
+        // ==========================================
         chatInput.addEventListener('input', (e) => {
             const mask = chatInput.dataset.mask;
             let v = e.target.value;
@@ -642,42 +607,34 @@
                 v = v.replace(/\D/g, '').slice(0, 6);
             } else if (mask === 'money') {
                 v = v.replace(/\D/g, '');
-                if (v) {
-                    v = (parseInt(v) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                }
+                if (v) v = (parseInt(v) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             }
             e.target.value = v;
         });
 
         chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSend();
-            }
+            if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
         });
 
-        // ============================================================
-        // FLUXO LÓGICO DO CHAT
-        // ============================================================
-        let currentStep = 0;
-
+        // ==========================================
+        // INICIALIZAÇÃO DO APP
+        // ==========================================
         window.onload = async () => {
             await botSay('Olá! 😊', 400);
             await botSay('Que bom ver você aqui!', 400);
             await botSay('A abertura da sua conta é rápida, segura e leva poucos minutos.', 400);
             await botSay('Primeiro, qual tipo de conta você quer abrir?', 600);
-            
-            // Abre o Bottom Sheet
             openSheet('sheetAccountType');
         };
 
-        // --- PASSO 1: TIPO DE CONTA ---
+        // ==========================================
+        // PASSOS DO FLUXO
+        // ==========================================
         let selectedType = '';
         function selectAccountType(type, element) {
             selectedType = type === 'PF' ? 'Pessoa Física (PF)' : 'Pessoa Jurídica (PJ)';
             document.querySelectorAll('#sheetAccountType .option-item').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
-            
             const btn = document.getElementById('btnConfirmType');
             btn.disabled = false;
             btn.style.opacity = '1';
@@ -687,40 +644,30 @@
             closeSheet();
             userSay(`Abrir uma conta ${selectedType.includes('PF') ? 'pessoal (PF)' : 'empresarial (PJ)'}`, true);
             state.type = selectedType;
-            
             setTimeout(async () => {
-                await botSay('As contas do nosso banco são para clientes acima de 18 anos e ficam vinculadas ao CPF, tanto a conta pessoal quanto a empresarial.', 800);
+                await botSay('As contas são para clientes acima de 18 anos e ficam vinculadas ao CPF.', 800);
                 await botSay('Por isso, digite o número do seu CPF.');
                 showChatInput('cpf', 'Digite seu CPF...');
                 currentStep = 1;
             }, 500);
         }
 
-        // --- PASSO 2: CPF ---
         async function processCPF(cpf) {
             if (cpf.length < 14) {
-                await botSay('CPF inválido. Por favor, digite novamente.');
+                await botSay('CPF inválido. Digite novamente.');
                 showChatInput('cpf', 'Digite seu CPF...');
                 return;
             }
             state.cpf = cpf;
             await botSay('Validando suas informações...', 1000);
-            
-            // Simula retorno da API
-            state.name = 'Janete Aparecida';
             await botSay('Como podemos chamar você?');
-            await botSay('Pode ser seu primeiro nome ou apelido.');
-            
             showChatInput('text', 'Digite seu nome...');
             currentStep = 2;
         }
 
-        // --- PASSO 3: NOME ---
         async function processName(name) {
             state.name = name;
             await botSay('Para continuar, você precisa aceitar os Termos de Uso e Política de Privacidade.');
-            
-            // Muda o botão inferior
             hideChatInput();
             showBottomBtn('Li e estou de acordo', () => {
                 hideBottomBtn();
@@ -728,7 +675,6 @@
             });
         }
 
-        // --- PASSO 4: TERMOS ---
         function acceptTerms() {
             closeFullscreen('fsTerms');
             userSay('Li e estou de acordo');
@@ -739,7 +685,6 @@
             }, 500);
         }
 
-        // --- PASSO 5: EMAIL ---
         async function processEmail(email) {
             if (!email.includes('@')) {
                 await botSay('E-mail inválido. Digite novamente.');
@@ -748,9 +693,9 @@
             }
             state.email = email;
             await botSay('E qual é o número do seu celular?');
-            
-            // Mostra um input especial com DDI
             hideChatInput();
+            
+            // Input customizado com DDI
             bottomBtnArea.innerHTML = `
                 <div style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 8px 16px; border-radius: 30px; border: 1px solid #333;">
                     <div style="display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="openSheet('sheetDDI')">
@@ -765,7 +710,6 @@
             `;
             bottomBtnArea.classList.add('active');
             
-            // Aplica máscara
             const phoneInput = document.getElementById('inlinePhoneInput');
             phoneInput.addEventListener('input', (e) => {
                 let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -780,15 +724,12 @@
 
         function submitPhone() {
             const val = document.getElementById('inlinePhoneInput').value;
-            if (val.length < 14) {
-                alert('Número inválido');
-                return;
-            }
+            if (val.length < 14) { alert('Número inválido'); return; }
             state.phone = val;
             
-            // Restaura o botão padrão
+            // Restaura botão padrão e atualiza a referência
             bottomBtnArea.innerHTML = `<button class="btn-primary" id="mainActionBtn">Selecionar</button>`;
-            mainActionBtn = document.getElementById('mainActionBtn'); // Atualiza a referência
+            mainActionBtn = document.getElementById('mainActionBtn');
             
             userSay(val, true);
             bottomBtnArea.classList.remove('active');
@@ -796,13 +737,12 @@
             setTimeout(async () => {
                 await botSay('Agora, crie uma senha de 6 números para acessar o app.');
                 await botSay('Ela será diferente da senha transacional e do seu cartão.');
-                await botSay('Uma dica: Não use números sequenciais, como 123456, a data do seu aniversário ou senha de desbloqueio do celular.');
+                await botSay('Uma dica: Não use números sequenciais ou a data do seu aniversário.');
                 showChatInput('password', 'Digite sua senha...');
                 currentStep = 5;
             }, 500);
         }
 
-        // --- PASSO 6: SENHA ---
         async function processPassword(pwd) {
             if (pwd.length !== 6) {
                 await botSay('A senha deve ter exatamente 6 números.');
@@ -811,13 +751,11 @@
             }
             state.password = pwd;
             userSay('🔒 ••••••', true);
-            
-            await botSay('Vamos continuar com o cadastro do seu endereço residencial. Qual seu CEP?');
+            await botSay('Vamos continuar com o cadastro do seu endereço. Qual seu CEP?');
             showChatInput('cep', '00000-000');
             currentStep = 6;
         }
 
-        // --- PASSO 7: CEP ---
         async function processCEP(cep) {
             const cleanCep = cep.replace(/\D/g, '');
             if (cleanCep.length !== 8) {
@@ -829,7 +767,6 @@
             userSay(cep, true);
             hideChatInput();
             
-            // Busca o CEP
             try {
                 const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
                 const data = await res.json();
@@ -838,52 +775,39 @@
                     showChatInput('cep', '00000-000');
                     return;
                 }
-                
-                // Preenche a tela cheia
                 document.getElementById('endCep').value = cep;
                 document.getElementById('endRua').value = data.logradouro;
                 document.getElementById('endBairro').value = data.bairro;
                 document.getElementById('endEstado').value = data.uf;
-                
                 openFullscreen('fsAddress');
                 document.getElementById('endNumero').focus();
-                
             } catch (e) {
-                await botSay('Erro ao buscar CEP. Tente novamente.');
+                await botSay('Erro de rede. Tente novamente.');
                 showChatInput('cep', '00000-000');
             }
         }
 
         function confirmAddress() {
             const num = document.getElementById('endNumero').value;
-            if (!num) {
-                document.getElementById('groupNumero').classList.add('error');
-                return;
-            }
+            if (!num) { document.getElementById('groupNumero').classList.add('error'); return; }
             document.getElementById('groupNumero').classList.remove('error');
-            
             closeFullscreen('fsAddress');
-            
             const fullAddress = `${document.getElementById('endRua').value}, ${num} - ${document.getElementById('endBairro').value}, ${document.getElementById('endEstado').value}`;
             userSay(fullAddress, true);
             
             setTimeout(async () => {
                 await botSay('Endereço cadastrado.');
                 await botSay('Qual seu salário ou quanto você recebe por mês?');
-                await botSay('Digite apenas a sua renda mensal, sem considerar o valor de outras pessoas da sua família.');
                 showChatInput('money', 'R$ 0,00');
                 currentStep = 7;
             }, 500);
         }
 
-        // --- PASSO 8: RENDA ---
         async function processIncome(income) {
             state.income = income;
             userSay(income, true);
-            
-            await botSay('Para continuar, envie uma selfie para confirmar quem é você. Ela não será utilizada como foto de perfil.');
-            await botSay('O acesso à câmera do seu celular é necessário para seguir com essa etapa.');
-            
+            await botSay('Para continuar, envie uma selfie para confirmar quem é você.');
+            await botSay('O acesso à câmera é necessário para seguir com essa etapa.');
             hideChatInput();
             showBottomBtn('Tirar foto', () => {
                 hideBottomBtn();
@@ -892,17 +816,14 @@
             });
         }
 
-        // --- PASSO 9: SELFIE ---
         let selfieInterval;
         function startSelfieTimer() {
             let time = 5;
             const timerEl = document.getElementById('selfieTimer');
             const btn = document.getElementById('btnFinishSelfie');
-            
             timerEl.innerText = `${time}s`;
             btn.disabled = true;
             btn.style.opacity = '0.5';
-            
             clearInterval(selfieInterval);
             selfieInterval = setInterval(() => {
                 time--;
@@ -919,12 +840,9 @@
         function confirmSelfie() {
             closeFullscreen('fsSelfie');
             userSay('Selfie enviada');
-            
             setTimeout(async () => {
-                await botSay('Você tem um convite ou código de indicação para abertura de conta?');
+                await botSay('Você tem um convite ou código de indicação?');
                 hideChatInput();
-                
-                // Dois botões (Não / Sim)
                 bottomBtnArea.innerHTML = `
                     <div class="bottom-btn-group">
                         <button class="btn-secondary" onclick="processReferral(false)">Não</button>
@@ -935,27 +853,20 @@
             }, 500);
         }
 
-        // --- PASSO 10: INDICAÇÃO ---
         function processReferral(hasReferral) {
-            state.referral = hasReferral;
             userSay(hasReferral ? 'Sim' : 'Não');
-            
-            // Restaura botão único
             bottomBtnArea.innerHTML = `<button class="btn-primary" id="mainActionBtn">Ver proposta</button>`;
+            mainActionBtn = document.getElementById('mainActionBtn');
             bottomBtnArea.classList.add('active');
             
-            const btn = document.getElementById('mainActionBtn');
-            btn.onclick = () => {
+            mainActionBtn.onclick = () => {
                 bottomBtnArea.classList.remove('active');
                 showProgressBar();
             };
         }
 
-        // --- PASSO 11: ENVIO E FINAL ---
         async function showProgressBar() {
             await botSay('Para terminar, você precisa aceitar os termos de abertura de conta.');
-            
-            // Simula envio de dados com barra de progresso
             const div = document.createElement('div');
             div.className = 'msg-group user';
             div.innerHTML = `
@@ -979,9 +890,8 @@
                     clearInterval(interval);
                     setTimeout(async () => {
                         await botSay('Pronto!', 300);
-                        await botSay('Vamos analisar essas informações e te responderemos em breve, por e-mail e push no seu celular.', 600);
+                        await botSay('Vamos analisar essas informações e te responderemos em breve.', 600);
                         await botSay('Obrigado por escolher o nosso banco. 💛', 600);
-                        
                         showBottomBtn('Mostrar próximos passos', () => {
                             hideBottomBtn();
                             openFullscreen('fsNextSteps');
@@ -991,13 +901,12 @@
             }, 200);
         }
 
-        // ============================================================
-        // FUNÇÃO GENÉRICA DE ENVIO DO CHAT
-        // ============================================================
+        // ==========================================
+        // CONTROLE DE ENVIO E UI
+        // ==========================================
         function handleSend() {
             const val = chatInput.value.trim();
             if (!val) return;
-            
             chatInput.value = '';
             hideChatInput();
             
@@ -1011,30 +920,22 @@
             }
         }
 
-        // ============================================================
-        // FUNÇÕES DE UI (MODAIS / TELAS)
-        // ============================================================
         function openSheet(id) {
             document.getElementById(id).classList.add('active');
-            overlay.classList.add('active');
+            document.getElementById('overlay').classList.add('active');
         }
 
         function closeSheet() {
             document.querySelectorAll('.sheet').forEach(el => el.classList.remove('active'));
-            overlay.classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
         }
 
-        function openFullscreen(id) {
-            document.getElementById(id).classList.add('active');
-        }
+        function openFullscreen(id) { document.getElementById(id).classList.add('active'); }
+        function closeFullscreen(id) { document.getElementById(id).classList.remove('active'); }
 
-        function closeFullscreen(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        // ============================================================
-        // LISTA DE DDI (Países)
-        // ============================================================
+        // ==========================================
+        // LISTA DE DDI
+        // ==========================================
         const countriesDDI = [
             { flag: '🇧🇷', name: 'Brasil', code: '55' },
             { flag: '🇺🇸', name: 'Estados Unidos', code: '1' },
@@ -1062,15 +963,11 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="color: #888;">+${c.code}</span>
-                        <span style="color: #555;">›</span>
                     </div>
                 `;
                 div.onclick = () => {
-                    // Atualiza o DDI no input (simplificado)
                     const ddiContainer = document.querySelector('div[onclick="openSheet(\\'sheetDDI\\')"]');
-                    if(ddiContainer) {
-                        ddiContainer.innerHTML = `<span>${c.flag}</span> <span>+${c.code}</span> <span>▼</span>`;
-                    }
+                    if(ddiContainer) ddiContainer.innerHTML = `<span>${c.flag}</span> <span>+${c.code}</span> <span>▼</span>`;
                     closeSheet();
                 };
                 list.appendChild(div);
@@ -1082,7 +979,7 @@
             renderDDIList(val);
         }
 
-        // Inicializa a lista de DDI
+        // Inicializa a lista
         renderDDIList();
     </script>
 </body>
