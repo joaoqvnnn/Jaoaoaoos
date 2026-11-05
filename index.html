@@ -15,6 +15,7 @@
             --text-muted: #8e8e93;
             --danger: #ff453a;
             --success: #34c759;
+            --border-radius: 18px;
         }
 
         * {
@@ -39,445 +40,233 @@
             border-bottom: 1px solid var(--surface);
             flex-shrink: 0; z-index: 10;
         }
-        .back-btn {
+        .close-btn {
             width: 40px; height: 40px; border-radius: 50%;
             background: rgba(255,255,255,0.08); border: none;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; color: #fff; font-size: 18px;
-            display: none; /* Oculto no primeiro passo */
         }
         .header .title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; }
         .bank-logo { font-weight: 800; color: var(--primary); }
-        .progress-bar { height: 3px; background: var(--surface); width: 100%; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
 
-        /* ===== ÁREA DE CONTEÚDO (SCROLL) ===== */
-        .content {
-            flex: 1; padding: 24px 20px; overflow-y: auto; scrollbar-width: none;
+        /* ===== ÁREA DO CHAT ===== */
+        .chat-container {
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 12px;
+            scrollbar-width: none;
         }
-        .content::-webkit-scrollbar { display: none; }
+        .chat-container::-webkit-scrollbar { display: none; }
 
-        .step { display: none; animation: fadeIn 0.3s ease; }
-        .step.active { display: block; }
-
-        h2 { font-size: 24px; margin-bottom: 8px; font-weight: 700; }
-        p.subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.4; }
-
-        /* ===== INPUTS E LABELS ===== */
-        .input-group { margin-bottom: 16px; }
-        .input-group label {
-            display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; margin-left: 4px;
+        .message {
+            max-width: 85%; padding: 14px 18px;
+            border-radius: var(--border-radius); font-size: 15px;
+            line-height: 1.4; animation: fadeIn 0.3s ease;
+            word-wrap: break-word;
         }
-        .input-group input, .input-group select {
-            width: 100%; background: var(--surface); border: 1px solid var(--surface-light);
-            border-radius: 12px; padding: 16px; font-size: 16px; color: #fff; outline: none;
-            transition: border 0.2s; -webkit-appearance: none;
+        .message.bot {
+            background-color: var(--surface); align-self: flex-start;
+            border-bottom-left-radius: 4px; color: var(--text-main);
         }
-        .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
-        .input-group input::placeholder { color: #636366; }
-        .row { display: flex; gap: 12px; }
-        .row .input-group { flex: 1; }
-
-        /* ===== BOTÕES ===== */
-        .btn-primary {
-            background-color: var(--primary); color: #000; border: none;
-            border-radius: 30px; padding: 16px 24px; font-size: 16px; font-weight: 700;
-            width: 100%; cursor: pointer; transition: transform 0.1s; margin-top: 16px;
+        .message.user {
+            background-color: var(--primary); color: #000;
+            align-self: flex-end; border-bottom-right-radius: 4px;
+            font-weight: 500;
         }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-secondary {
-            background-color: transparent; color: var(--text-main); border: 1px solid var(--surface-light);
-            border-radius: 30px; padding: 16px 24px; font-size: 16px; font-weight: 600;
-            width: 100%; cursor: pointer; margin-top: 12px;
+        .message .bot-name {
+            font-size: 12px; color: var(--text-muted);
+            margin-bottom: 4px; display: block;
         }
-
-        /* ===== OPÇÕES DE CARTÃO (PF/PJ, ETC) ===== */
-        .card-option {
-            background: var(--surface); border: 1px solid var(--surface-light);
-            border-radius: 16px; padding: 20px; margin-bottom: 12px;
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            transition: border 0.2s;
-        }
-        .card-option:hover, .card-option.selected { border-color: var(--primary); }
-        .card-option h3 { font-size: 16px; margin-bottom: 4px; }
-        .card-option p { font-size: 13px; color: var(--text-muted); }
-
-        /* ===== UPLOAD DE DOCUMENTO COM BLUR ===== */
-        .upload-area {
-            border: 2px dashed var(--surface-light); border-radius: 16px; padding: 30px 20px;
-            text-align: center; cursor: pointer; background: var(--surface); transition: border 0.2s;
-            margin-bottom: 16px;
-        }
-        .upload-area:hover { border-color: var(--primary); }
-        .upload-icon { font-size: 32px; margin-bottom: 12px; }
-        
-        .doc-preview-container { display: none; margin-bottom: 16px; }
-        .doc-preview-container.active { display: block; }
-        .doc-preview {
-            width: 100%; height: 200px; border-radius: 16px; background: #333;
-            background-size: cover; background-position: center;
-            position: relative; overflow: hidden; border: 1px solid var(--surface-light);
-        }
-        /* O Segredo do Borrão */
-        .doc-preview .blurred-img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: blur(12px); transition: filter 0.3s ease;
-        }
-        .doc-actions { display: flex; gap: 12px; margin-top: 12px; }
-        .doc-actions button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; }
-        .btn-edit { background: var(--surface-light); color: #fff; }
-        .btn-confirm { background: var(--primary); color: #000; }
-
-        /* ===== LOADING E SUCESSO ===== */
-        .loader {
-            width: 40px; height: 40px; border: 3px solid var(--surface-light);
-            border-top-color: var(--primary); border-radius: 50%;
-            animation: spin 1s linear infinite; margin: 40px auto;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .success-icon { font-size: 64px; text-align: center; margin-bottom: 20px; }
-        .receipt-box {
-            background: var(--surface); border-radius: 16px; padding: 20px; margin-bottom: 24px;
-        }
-        .receipt-row {
-            display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;
-        }
-        .receipt-row:last-child { margin-bottom: 0; }
-        .receipt-row span:first-child { color: var(--text-muted); }
-        .receipt-row span:last-child { font-weight: 600; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== BOTTOM SHEET / FOOTER ===== */
-        .footer { padding: 16px 20px 24px; background: var(--bg-color); flex-shrink: 0; display: flex; gap: 12px; }
+        /* ===== BOTÕES DE OPÇÃO RÁPIDA (QUICK REPLY) ===== */
+        .quick-replies {
+            display: flex; flex-direction: column; gap: 8px;
+            margin-top: 4px; align-self: flex-start; max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+        .quick-replies button {
+            background: var(--surface-light); border: 1px solid #3a3a3c;
+            color: #fff; padding: 12px 16px; border-radius: var(--border-radius);
+            font-size: 14px; text-align: left; cursor: pointer;
+            transition: background 0.2s, border 0.2s;
+        }
+        .quick-replies button:hover { background: #3a3a3c; border-color: var(--primary); }
+
+        /* ===== COMPONENTES ESPECIAIS NO CHAT ===== */
+        /* Seleção de País */
+        .chat-select {
+            background: var(--surface-light); color: #fff; border: 1px solid #3a3a3c;
+            padding: 12px 16px; border-radius: var(--border-radius); font-size: 15px;
+            width: 100%; margin-top: 8px; outline: none; cursor: pointer;
+        }
+        
+        /* Upload de Documento */
+        .upload-widget {
+            background: var(--surface); border: 1px dashed var(--text-muted);
+            border-radius: var(--border-radius); padding: 20px; text-align: center;
+            margin-top: 8px; cursor: pointer; transition: border 0.2s;
+        }
+        .upload-widget:hover { border-color: var(--primary); }
+        .doc-preview-box {
+            display: none; margin-top: 8px; text-align: center;
+        }
+        .doc-preview-box.active { display: block; }
+        .img-blur {
+            width: 100%; height: 150px; border-radius: 12px;
+            object-fit: cover; filter: blur(12px); transition: filter 0.3s ease;
+            background: #333;
+        }
+        .doc-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .doc-actions button { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-edit { background: var(--surface-light); color: #fff; }
+        .btn-confirm { background: var(--primary); color: #000; }
+
+        /* ===== ÁREA DE INPUT ===== */
+        .input-area {
+            padding: 16px 20px 24px; background-color: var(--bg-color);
+            border-top: 1px solid var(--surface); display: flex; gap: 12px;
+            flex-shrink: 0; align-items: center;
+        }
+        .input-area input {
+            flex: 1; background: var(--surface); border: 1px solid var(--surface-light);
+            border-radius: 30px; padding: 16px 20px; font-size: 16px; color: #fff;
+            outline: none; transition: border 0.2s;
+        }
+        .input-area input:focus { border-color: var(--primary); }
+        .input-area input::placeholder { color: #636366; }
+        .input-area button {
+            width: 54px; height: 54px; border-radius: 50%; background-color: var(--primary);
+            border: none; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #000; font-size: 20px; transition: transform 0.1s, opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .input-area button:active { transform: scale(0.95); }
+        .input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ===== TYPING INDICATOR ===== */
+        .typing-indicator {
+            display: none; align-self: flex-start; background: var(--surface);
+            padding: 14px 18px; border-radius: var(--border-radius);
+            border-bottom-left-radius: 4px; gap: 4px;
+        }
+        .typing-indicator.active { display: flex; }
+        .typing-indicator span {
+            width: 6px; height: 6px; background: var(--text-muted);
+            border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        /* ===== SUCESSO ===== */
+        .success-screen {
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; padding: 40px 20px;
+            height: 100%; animation: fadeIn 0.5s ease;
+        }
+        .success-screen.active { display: flex; }
+        .success-icon { font-size: 64px; margin-bottom: 16px; }
+        .receipt-box {
+            background: var(--surface); border-radius: 16px;
+            padding: 20px; width: 100%; max-width: 350px;
+            margin-bottom: 24px; text-align: left;
+        }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+        .receipt-row:last-child { margin-bottom: 0; }
+        .receipt-row span:first-child { color: var(--text-muted); }
+        .receipt-row span:last-child { font-weight: 600; }
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
     <div class="header">
-        <button class="back-btn" id="backBtn" onclick="prevStep()">←</button>
+        <button class="close-btn" onclick="if(confirm('Deseja cancelar a abertura de conta?')) location.reload()">✕</button>
         <div class="title"><span class="bank-logo">MeuBanco</span> Digital</div>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-    <!-- CONTEÚDO -->
-    <div class="content">
-
-        <!-- ETAPA 1: TIPO DE CONTA -->
-        <div class="step active" id="step1">
-            <h2>Bem-vindo</h2>
-            <p class="subtitle">Para começar, escolha o tipo de conta que deseja abrir.</p>
-            <div class="card-option" onclick="selectAccountType('PF')">
-                <div>
-                    <h3>Pessoa Física (PF)</h3>
-                    <p>Para você, suas finanças e investimentos.</p>
-                </div>
-                <div style="color: var(--primary);">→</div>
-            </div>
-            <div class="card-option" onclick="selectAccountType('PJ')">
-                <div>
-                    <h3>Pessoa Jurídica (PJ)</h3>
-                    <p>Para sua empresa, MEI ou negócio.</p>
-                </div>
-                <div style="color: var(--primary);">→</div>
-            </div>
-        </div>
-
-        <!-- ETAPA 2: NACIONALIDADE E DOCUMENTO -->
-        <div class="step" id="step2">
-            <h2>Nacionalidade</h2>
-            <p class="subtitle">Selecione seu país de origem. O documento exigido mudará automaticamente.</p>
-            <div class="input-group">
-                <label>País de Nacionalidade</label>
-                <select id="countrySelect" onchange="updateDocumentType()">
-                    <option value="BR">Brasil 🇧🇷</option>
-                    <option value="US">Estados Unidos 🇺🇸</option>
-                    <option value="PT">Portugal 🇵🇹</option>
-                    <option value="ES">Espanha 🇪🇸</option>
-                    <option value="AR">Argentina 🇦🇷</option>
-                    <option value="MX">México 🇲🇽</option>
-                    <option value="CA">Canadá 🇨🇦</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label id="docLabel">CPF</label>
-                <input type="text" id="docInput" placeholder="000.000.000-00" oninput="applyDocMask()">
-            </div>
-        </div>
-
-        <!-- ETAPA 3: DADOS PESSOAIS -->
-        <div class="step" id="step3">
-            <h2>Dados Pessoais</h2>
-            <p class="subtitle">Preencha suas informações básicas.</p>
-            <div class="input-group">
-                <label>Nome Completo</label>
-                <input type="text" id="nomeCompleto" placeholder="Ex: João da Silva">
-            </div>
-            <div class="input-group">
-                <label>Data de Nascimento</label>
-                <input type="date" id="dataNasc">
-            </div>
-            <div class="input-group">
-                <label>Nome da Mãe</label>
-                <input type="text" id="nomeMae" placeholder="Nome completo da sua mãe">
-            </div>
-            <div class="input-group">
-                <label>Nome do Pai (Opcional)</label>
-                <input type="text" id="nomePai" placeholder="Nome completo do seu pai">
-            </div>
-            <div class="row">
-                <div class="input-group">
-                    <label>Sexo (Opcional)</label>
-                    <select id="sexo">
-                        <option value="">Selecione</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                        <option value="O">Outro</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Estado Civil</label>
-                    <select id="estadoCivil">
-                        <option value="Solteiro">Solteiro(a)</option>
-                        <option value="Casado">Casado(a)</option>
-                        <option value="Divorciado">Divorciado(a)</option>
-                        <option value="Viuvo">Viúvo(a)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-group">
-                <label>E-mail</label>
-                <input type="email" id="email" placeholder="seu@email.com">
-            </div>
-            <div class="row">
-                <div class="input-group">
-                    <label>Celular</label>
-                    <input type="tel" id="celular" placeholder="(11) 99999-9999" oninput="applyPhoneMask(this)">
-                </div>
-                <div class="input-group">
-                    <label>WhatsApp</label>
-                    <input type="tel" id="whatsapp" placeholder="(11) 99999-9999" oninput="applyPhoneMask(this)">
-                </div>
-            </div>
-        </div>
-
-        <!-- ETAPA 4: DADOS PROFISSIONAIS -->
-        <div class="step" id="step4">
-            <h2>Dados Profissionais</h2>
-            <p class="subtitle">Informações sobre sua ocupação e renda.</p>
-            <div class="input-group">
-                <label>Profissão</label>
-                <input list="profissoes" id="profissao" placeholder="Digite ou selecione...">
-                <datalist id="profissoes">
-                    <!-- JS vai preencher com 100+ profissões -->
-                </datalist>
-            </div>
-            <div class="input-group">
-                <label>Empresa onde trabalha (Opcional)</label>
-                <input type="text" id="empresa" placeholder="Nome da empresa">
-            </div>
-            <div class="input-group">
-                <label>Renda Mensal</label>
-                <select id="renda">
-                    <option value="ate2">Até R$ 2.000</option>
-                    <option value="2a5">R$ 2.001 a R$ 5.000</option>
-                    <option value="5a10">R$ 5.001 a R$ 10.000</option>
-                    <option value="10mais">Acima de R$ 10.000</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Origem dos Recursos</label>
-                <select id="origemRecursos">
-                    <option value="salario">Salário</option>
-                    <option value="autonomo">Autônomo / Freelancer</option>
-                    <option value="empresa">Pró-labore / Empresa</option>
-                    <option value="investimentos">Investimentos</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- ETAPA 5: DOCUMENTOS (O Segredo do Blur) -->
-        <div class="step" id="step5">
-            <h2>Documento de Identificação</h2>
-            <p class="subtitle">Escolha o documento para enviar. Ele será borrado por segurança.</p>
-            
-            <div class="input-group">
-                <label>Tipo de Documento</label>
-                <select id="tipoDocumento">
-                    <option value="RG">RG</option>
-                    <option value="CIN">CIN (Carteira de Identidade Nacional)</option>
-                    <option value="CNH">CNH (Carteira Nacional de Habilitação)</option>
-                    <option value="Passaporte">Passaporte</option>
-                    <option value="Outro">Outro documento aceito</option>
-                </select>
-            </div>
-
-            <!-- Área de Upload Simulada -->
-            <div class="upload-area" id="uploadArea" onclick="simulateUpload()">
-                <div class="upload-icon">📸</div>
-                <p style="font-weight: 600; margin-bottom: 4px;">Tirar foto ou enviar arquivo</p>
-                <p style="font-size: 12px; color: var(--text-muted);">Frente do documento</p>
-            </div>
-
-            <!-- Preview com Blur -->
-            <div class="doc-preview-container" id="docPreviewContainer">
-                <div class="doc-preview">
-                    <!-- Simulando a imagem do documento com blur -->
-                    <img src="https://via.placeholder.com/600x400/333333/ffffff?text=DOCUMENTO" class="blurred-img" id="blurredImg">
-                </div>
-                <div class="doc-actions">
-                    <button class="btn-edit" onclick="editDocument()">Editar</button>
-                    <button class="btn-confirm" onclick="confirmDocument()">Confirmar</button>
-                </div>
-            </div>
-            
-            <div id="docConfirmedMsg" style="display: none; color: var(--success); font-weight: 600; text-align: center; margin-bottom: 16px;">
-                ✅ Documento validado com sucesso!
-            </div>
-        </div>
-
-        <!-- ETAPA 6: ENDEREÇO -->
-        <div class="step" id="step6">
-            <h2>Endereço Residencial</h2>
-            <p class="subtitle">Digite o CEP para preenchermos automaticamente.</p>
-            <div class="input-group">
-                <label>CEP</label>
-                <input type="tel" id="cep" placeholder="00000-000" maxlength="9" oninput="applyCepMask(this)" onblur="fetchAddress()">
-            </div>
-            <div class="row">
-                <div class="input-group" style="flex: 2;">
-                    <label>Rua</label>
-                    <input type="text" id="rua" placeholder="Rua" disabled>
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>Número</label>
-                    <input type="text" id="numero" placeholder="Ex: 123">
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Complemento (Opcional)</label>
-                <input type="text" id="complemento" placeholder="Apto, Bloco, etc.">
-            </div>
-            <div class="row">
-                <div class="input-group">
-                    <label>Bairro</label>
-                    <input type="text" id="bairro" placeholder="Bairro" disabled>
-                </div>
-                <div class="input-group">
-                    <label>Cidade</label>
-                    <input type="text" id="cidade" placeholder="Cidade" disabled>
-                </div>
-                <div class="input-group" style="flex: 0.5;">
-                    <label>UF</label>
-                    <input type="text" id="uf" placeholder="UF" disabled>
-                </div>
-            </div>
-        </div>
-
-        <!-- ETAPA 7: SEGURANÇA -->
-        <div class="step" id="step7">
-            <h2>Segurança</h2>
-            <p class="subtitle">Crie suas credenciais de acesso.</p>
-            <div class="input-group">
-                <label>Senha de Acesso</label>
-                <input type="password" id="senha" placeholder="Mínimo 8 caracteres">
-            </div>
-            <div class="input-group">
-                <label>Confirmar Senha</label>
-                <input type="password" id="senhaConfirm" placeholder="Confirme a senha">
-            </div>
-            <div class="input-group">
-                <label>PIN de Segurança (4 dígitos)</label>
-                <input type="tel" id="pin" placeholder="0000" maxlength="4">
-            </div>
-            <div style="display: flex; gap: 8px; margin-top: 16px; align-items: flex-start;">
-                <input type="checkbox" id="termos" style="margin-top: 4px;">
-                <label for="termos" style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
-                    Li e aceito os Termos de Abertura de Conta e a Política de Privacidade.
-                </label>
-            </div>
-        </div>
-
-        <!-- ETAPA 8: ANÁLISE -->
-        <div class="step" id="step8">
-            <h2 style="text-align: center; margin-top: 40px;">Analisando seus dados</h2>
-            <p class="subtitle" style="text-align: center;">Por favor, aguarde enquanto validamos suas informações em nossos sistemas de segurança e antifraude.</p>
-            <div class="loader"></div>
-            <p id="loadingText" style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 20px;">Validando documento...</p>
-        </div>
-
-        <!-- ETAPA 9: SUCESSO -->
-        <div class="step" id="step9">
-            <div class="success-icon">🎉</div>
-            <h2 style="text-align: center; margin-bottom: 8px;">Conta Aprovada!</h2>
-            <p class="subtitle" style="text-align: center; margin-bottom: 24px;">Bem-vindo ao MeuBanco. Sua conta já está ativa.</p>
-            
-            <div class="receipt-box">
-                <div class="receipt-row">
-                    <span>Titular</span>
-                    <span id="resNome">-</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Agência</span>
-                    <span>0001</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Conta</span>
-                    <span id="resConta">-</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Tipo</span>
-                    <span id="resTipo">-</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Data de Abertura</span>
-                    <span id="resData">-</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Status</span>
-                    <span style="color: var(--success);">Ativa</span>
-                </div>
-            </div>
-
-            <button class="btn-primary" onclick="alert('Acessando o menu principal...')">Acessar Menu Principal</button>
-        </div>
-
+    <!-- CHAT -->
+    <div class="chat-container" id="chatContainer">
+        <div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>
     </div>
 
-    <!-- FOOTER (Botão de Continuar) -->
-    <div class="footer" id="footer">
-        <button class="btn-primary" id="nextBtn" onclick="nextStep()">Continuar</button>
+    <!-- INPUT -->
+    <div class="input-area" id="inputArea">
+        <input type="text" id="chatInput" placeholder="Digite sua resposta..." autocomplete="off" disabled>
+        <button id="sendBtn" disabled onclick="processInput()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="black" stroke-width="2" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="black" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </div>
+
+    <!-- TELA DE SUCESSO (Oculta no início) -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">🎉</div>
+        <h2 style="margin-bottom: 8px;">Conta Aprovada!</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Bem-vindo ao MeuBanco. Sua conta já está ativa.</p>
+        
+        <div class="receipt-box">
+            <div class="receipt-row"><span>Titular</span><span id="resNome">-</span></div>
+            <div class="receipt-row"><span>Agência</span><span>0001</span></div>
+            <div class="receipt-row"><span>Conta</span><span id="resConta">-</span></div>
+            <div class="receipt-row"><span>Tipo</span><span id="resTipo">-</span></div>
+            <div class="receipt-row"><span>Data de Abertura</span><span id="resData">-</span></div>
+            <div class="receipt-row"><span>Status</span><span style="color: var(--success);">Ativa</span></div>
+        </div>
+
+        <button style="background:var(--primary); color:#000; border:none; padding:16px 32px; border-radius:30px; font-size:16px; font-weight:bold; cursor:pointer; width:100%; max-width:350px;" onclick="alert('Acessando menu principal...')">Acessar Menu Principal</button>
     </div>
 
     <script>
         // ============================================================
-        // CONFIGURAÇÃO DE ESTADO E DADOS
+        // 1. ESTADO E VARIÁVEIS
         // ============================================================
-        let currentStep = 1;
-        const totalSteps = 9;
-        let accountData = {
-            tipo: '',
-            pais: 'BR',
-            documento: '',
-            nome: '',
+        const state = {
+            step: 0,
+            tipoConta: '',
+            pais: 'Brasil',
+            docTipo: 'CPF',
+            docValor: '',
+            nomeReal: '',
+            nomeMascarado: '',
+            nomeCorrigido: '',
+            dataNasc: '',
+            nomeMae: '',
             email: '',
-            cpf: '' // Usado para simulação
+            telefone: '',
+            profissao: '',
+            empresa: '',
+            renda: '',
+            docFotoConfirmada: false,
+            cep: '',
+            rua: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
+            numero: '',
+            complemento: '',
+            senha: '',
+            pin: ''
         };
 
-        // 7 Países e seus respectivos documentos de identificação
-        const countryDocs = {
-            'BR': { label: 'CPF', mask: 'cpf', placeholder: '000.000.000-00' },
-            'US': { label: 'SSN (Social Security Number)', mask: 'text', placeholder: '000-00-0000' },
-            'PT': { label: 'NIF (Número de Identificação Fiscal)', mask: 'text', placeholder: '000000000' },
-            'ES': { label: 'NIF (Número de Identificación Fiscal)', mask: 'text', placeholder: '00000000X' },
-            'AR': { label: 'CUIT/CUIL', mask: 'text', placeholder: '00-00000000-0' },
-            'MX': { label: 'RFC (Registro Federal de Contribuyentes)', mask: 'text', placeholder: 'XAXX010101000' },
-            'CA': { label: 'SIN (Social Insurance Number)', mask: 'text', placeholder: '000-000-000' }
+        const chatContainer = document.getElementById('chatContainer');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const inputArea = document.getElementById('inputArea');
+
+        // 7 Países e seus respectivos documentos
+        const countries = {
+            'Brasil': { doc: 'CPF', mask: 'cpf', placeholder: '000.000.000-00' },
+            'Estados Unidos': { doc: 'SSN', mask: 'text', placeholder: '000-00-0000' },
+            'Portugal': { doc: 'NIF', mask: 'text', placeholder: '000000000' },
+            'Espanha': { doc: 'NIF', mask: 'text', placeholder: '00000000X' },
+            'Argentina': { doc: 'CUIT/CUIL', mask: 'text', placeholder: '00-00000000-0' },
+            'México': { doc: 'RFC', mask: 'text', placeholder: 'XAXX010101000' },
+            'Canadá': { doc: 'SIN', mask: 'text', placeholder: '000-000-000' }
         };
 
-        // Lista de +100 Profissões para o datalist
+        // +100 Profissões
         const profissoes = [
             "Advogado", "Engenheiro Civil", "Médico", "Enfermeiro", "Professor", "Dentista", "Arquiteto", "Contador", 
             "Analista de Sistemas", "Desenvolvedor de Software", "Designer Gráfico", "Administrador", "Psicólogo", "Fisioterapeuta",
@@ -493,239 +282,530 @@
             "Açougueiro", "Operador de Máquinas", "Soldador", "Torneiro Mecânico", "Técnico em Informática", "Técnico em Enfermagem",
             "Técnico em Segurança do Trabalho", "Despachante", "Bancário", "Analista Financeiro", "Auditor", "Atuário",
             "Personal Trainer", "Educador Físico", "Fonoaudiólogo", "Terapeuta Ocupacional", "Assistente Social", "Antropólogo",
-            "Arqueólogo", "Paleontólogo", "Oceanógrafo", "Meteorologista", "Estatístico", "Cientista de Dados", "UX/UI Designer",
+            "Arqueólogo", "Paleontólogo", "Oceanógrafo", "Meteorologista", "Cientista de Dados", "UX/UI Designer",
             "Product Manager", "Scrum Master", "Analista de RH", "Recrutador", "Zelador", "Porteiro", "Segurança", "Vigilante",
             "Empresário", "Autônomo", "Freelancer", "Estudante", "Aposentado", "Do Lar", "Desempregado", "Outro"
         ];
 
         // ============================================================
-        // NAVEGAÇÃO E LÓGICA DE PASSOS
+        // 2. FUNÇÕES DO CHAT
         // ============================================================
-        function updateProgress() {
-            const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-            document.getElementById('progressFill').style.width = `${percent}%`;
-            
-            // Mostrar/ocultar botão voltar
-            document.getElementById('backBtn').style.display = currentStep > 1 && currentStep < 8 ? 'flex' : 'none';
-            
-            // Esconder footer em telas específicas
-            const footer = document.getElementById('footer');
-            if (currentStep === 8 || currentStep === 9) {
-                footer.style.display = 'none';
-            } else {
-                footer.style.display = 'flex';
-            }
+        function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }
+        
+        function showTyping() {
+            typingIndicator.classList.add('active');
+            scrollToBottom();
         }
+        function hideTyping() { typingIndicator.classList.remove('active'); }
 
-        function showStep(step) {
-            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-            document.getElementById(`step${step}`).classList.add('active');
-            window.scrollTo(0, 0);
-            updateProgress();
-        }
-
-        function nextStep() {
-            if (!validateStep(currentStep)) return;
-            
-            currentStep++;
-            if (currentStep > totalSteps) currentStep = totalSteps;
-            
-            // Lógica especial para o passo de loading
-            if (currentStep === 8) {
-                showStep(8);
-                simulateApproval();
-            } else {
-                showStep(currentStep);
-            }
-        }
-
-        function prevStep() {
-            currentStep--;
-            showStep(currentStep);
-        }
-
-        function validateStep(step) {
-            // Validações simples para garantir que o usuário não pule etapas vazias
-            if (step === 1 && !accountData.tipo) {
-                alert('Por favor, selecione o tipo de conta.'); return false;
-            }
-            if (step === 2 && !document.getElementById('docInput').value) {
-                alert('Por favor, preencha o documento.'); return false;
-            }
-            if (step === 3 && !document.getElementById('nomeCompleto').value) {
-                alert('Por favor, preencha seu nome.'); return false;
-            }
-            if (step === 5 && !document.getElementById('docPreviewContainer').classList.contains('active')) {
-                alert('Por favor, envie e confirme seu documento.'); return false;
-            }
-            if (step === 6 && !document.getElementById('numero').value) {
-                alert('Por favor, preencha o número do endereço.'); return false;
-            }
-            if (step === 7) {
-                if (!document.getElementById('senha').value || document.getElementById('senha').value !== document.getElementById('senhaConfirm').value) {
-                    alert('As senhas não coincidem ou estão vazias.'); return false;
-                }
-                if (!document.getElementById('termos').checked) {
-                    alert('Você precisa aceitar os termos.'); return false;
-                }
-            }
-            return true;
-        }
-
-        // ============================================================
-        // INTERAÇÕES E MÁSCARAS
-        // ============================================================
-        function selectAccountType(tipo) {
-            accountData.tipo = tipo;
-            document.querySelectorAll('.card-option').forEach(el => el.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-            
-            // Se for PJ, poderíamos ter um fluxo separado, mas para simplificar vamos seguir para o país
-            setTimeout(() => {
-                nextStep();
-            }, 300);
-        }
-
-        // Popula o Datalist de Profissões
-        window.onload = () => {
-            const datalist = document.getElementById('profissoes');
-            profissoes.forEach(p => {
-                const option = document.createElement('option');
-                option.value = p;
-                datalist.appendChild(option);
+        function botSay(text, delay = 600) {
+            return new Promise((resolve) => {
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    const msg = document.createElement('div');
+                    msg.className = 'message bot';
+                    msg.innerHTML = `<span class="bot-name">Assistente Virtual</span>${text}`;
+                    chatContainer.insertBefore(msg, typingIndicator);
+                    scrollToBottom();
+                    resolve();
+                }, delay);
             });
-        };
-
-        // Atualiza o label e máscara do documento baseado no país
-        function updateDocumentType() {
-            const country = document.getElementById('countrySelect').value;
-            const docConfig = countryDocs[country];
-            
-            accountData.pais = country;
-            document.getElementById('docLabel').textContent = docConfig.label;
-            const input = document.getElementById('docInput');
-            input.value = '';
-            input.placeholder = docConfig.placeholder;
         }
 
-        function applyDocMask() {
-            const country = document.getElementById('countrySelect').value;
-            if (country === 'BR') {
-                let v = document.getElementById('docInput').value.replace(/\D/g, '');
+        function userSay(text) {
+            const msg = document.createElement('div');
+            msg.className = 'message user';
+            msg.textContent = text;
+            chatContainer.insertBefore(msg, typingIndicator);
+            scrollToBottom();
+        }
+
+        function showQuickReplies(options) {
+            const container = document.createElement('div');
+            container.className = 'quick-replies';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.textContent = opt.label;
+                btn.onclick = () => {
+                    container.remove();
+                    userSay(opt.label);
+                    opt.action();
+                };
+                container.appendChild(btn);
+            });
+            chatContainer.insertBefore(container, typingIndicator);
+            scrollToBottom();
+        }
+
+        function enableInput(maskType = 'text') {
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.value = '';
+            chatInput.focus();
+            chatInput.dataset.mask = maskType;
+            
+            if (maskType === 'text') chatInput.placeholder = 'Digite sua resposta...';
+            if (maskType === 'cpf') chatInput.placeholder = '000.000.000-00';
+            if (maskType === 'phone') chatInput.placeholder = '(11) 99999-9999';
+            if (maskType === 'cep') chatInput.placeholder = '00000-000';
+            if (maskType === 'date') chatInput.placeholder = 'DD/MM/AAAA';
+            if (maskType === 'password') chatInput.placeholder = 'Digite sua senha...';
+            if (maskType === 'pin') chatInput.placeholder = '0000';
+        }
+
+        function disableInput() {
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            chatInput.placeholder = 'Aguarde...';
+        }
+
+        // ============================================================
+        // 3. MÁSCARAS E VALIDAÇÕES
+        // ============================================================
+        chatInput.addEventListener('input', (e) => {
+            const mask = chatInput.dataset.mask;
+            let v = e.target.value;
+
+            if (mask === 'cpf') {
+                v = v.replace(/\D/g, '');
+                if (v.length > 11) v = v.slice(0, 11);
                 v = v.replace(/(\d{3})(\d)/, '$1.$2');
                 v = v.replace(/(\d{3})(\d)/, '$1.$2');
                 v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                document.getElementById('docInput').value = v;
+            } else if (mask === 'phone') {
+                v = v.replace(/\D/g, '');
+                if (v.length > 11) v = v.slice(0, 11);
+                if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
+            } else if (mask === 'cep') {
+                v = v.replace(/\D/g, '');
+                if (v.length > 8) v = v.slice(0, 8);
+                v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+            } else if (mask === 'date') {
+                v = v.replace(/\D/g, '');
+                if (v.length > 8) v = v.slice(0, 8);
+                v = v.replace(/(\d{2})(\d)/, '$1/$2');
+                v = v.replace(/(\d{2})(\d)/, '$1/$2');
+            } else if (mask === 'pin') {
+                v = v.replace(/\D/g, '');
+                if (v.length > 4) v = v.slice(0, 4);
             }
+            e.target.value = v;
+        });
+
+        // Função para mascarar o nome (Ex: João da Silva -> J*** da S***)
+        function maskName(fullName) {
+            if (!fullName) return '';
+            let parts = fullName.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0][0] + '***';
+            
+            // Mantém a primeira letra do primeiro nome e do último nome, mascara o resto
+            let firstName = parts[0];
+            let lastName = parts[parts.length - 1];
+            let middleNames = parts.slice(1, parts.length - 1).map(() => '***').join(' ');
+            
+            let maskedFirst = firstName[0] + '***';
+            let maskedLast = lastName[0] + '***';
+            
+            return `${maskedFirst} ${middleNames ? middleNames + ' ' : ''}${maskedLast}`.trim();
         }
 
-        function applyPhoneMask(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
-            input.value = v;
+        async function fetchAddress(cep) {
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cep.replace(/\D/g,'')}/json/`);
+                const data = await res.json();
+                if (data.erro) return null;
+                return data;
+            } catch (e) { return null; }
         }
 
-        function applyCepMask(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 8) v = v.slice(0, 8);
-            v = v.replace(/^(\d{5})(\d)/, '$1-$2');
-            input.value = v;
+        // Simula a API Paga de KYC / Serpro
+        function simulateKYC(doc) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const nomes = ['João da Silva', 'Maria Eduarda Santos', 'Lucas Oliveira Costa', 'Ana Beatriz Souza', 'Pedro Henrique Almeida'];
+                    const randomName = nomes[Math.floor(Math.random() * nomes.length)];
+                    resolve(randomName);
+                }, 1500);
+            });
         }
 
         // ============================================================
-        // API DE CEP (ViaCEP)
+        // 4. FLUXO DO CHAT (PASSO A PASSO)
         // ============================================================
-        async function fetchAddress() {
-            const cep = document.getElementById('cep').value.replace(/\D/g, '');
-            if (cep.length === 8) {
-                try {
-                    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-                    const data = await res.json();
-                    if (!data.erro) {
-                        document.getElementById('rua').value = data.logradouro;
-                        document.getElementById('bairro').value = data.bairro;
-                        document.getElementById('cidade').value = data.localidade;
-                        document.getElementById('uf').value = data.uf;
-                        document.getElementById('numero').focus();
-                    }
-                } catch (e) {
-                    console.log("Erro ao buscar CEP");
-                }
+        
+        async function startChat() {
+            await botSay('Olá! Seja bem-vindo ao <strong>MeuBanco Digital</strong>.');
+            await botSay('A abertura da sua conta é rápida, segura e leva poucos minutos.');
+            await botSay('Primeiro, qual tipo de conta você deseja abrir?');
+            
+            showQuickReplies([
+                { label: 'Conta Pessoal (PF)', action: () => { state.tipoConta = 'Pessoa Física'; askCountry(); } },
+                { label: 'Conta Empresarial (PJ)', action: () => { state.tipoConta = 'Pessoa Jurídica'; askCountry(); } }
+            ]);
+        }
+
+        async function askCountry() {
+            await botSay('Perfeito. Agora, selecione o seu país de nacionalidade:');
+            
+            // Cria um select customizado dentro do chat
+            const container = document.createElement('div');
+            container.className = 'quick-replies';
+            
+            const select = document.createElement('select');
+            select.className = 'chat-select';
+            Object.keys(countries).forEach(country => {
+                const opt = document.createElement('option');
+                opt.value = country;
+                opt.textContent = country;
+                select.appendChild(opt);
+            });
+            
+            const btn = document.createElement('button');
+            btn.textContent = 'Confirmar País';
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#000';
+            btn.style.fontWeight = '600';
+            btn.onclick = () => {
+                state.pais = select.value;
+                state.docTipo = countries[state.pais].doc;
+                container.remove();
+                userSay(`${state.pais} (${state.docTipo})`);
+                askDocument();
+            };
+            
+            container.appendChild(select);
+            container.appendChild(btn);
+            chatContainer.insertBefore(container, typingIndicator);
+            scrollToBottom();
+        }
+
+        async function askDocument() {
+            const docConfig = countries[state.pais];
+            await botSay(`Para continuarmos, digite o seu <strong>${state.docTipo}</strong>:`);
+            enableInput(docConfig.mask);
+            state.step = 'doc';
+        }
+
+        async function handleDocument(doc) {
+            if (doc.length < 5) {
+                await botSay('Documento inválido. Por favor, digite novamente:');
+                return;
             }
+            state.docValor = doc;
+            await botSay('Validando seus dados em nosso sistema...');
+            
+            // Simula KYC
+            const nomeEncontrado = await simulateKYC(doc);
+            state.nomeReal = nomeEncontrado;
+            state.nomeMascarado = maskName(nomeEncontrado);
+            
+            await botSay(`Encontrei o titular <strong>${state.nomeMascarado}</strong> vinculado a este documento.`);
+            await botSay('Essas informações estão corretas?');
+            
+            showQuickReplies([
+                { label: 'Sim, está correto', action: () => { state.nomeCorrigido = state.nomeReal; askBirthDate(); } },
+                { label: 'Não, corrigir nome', action: () => { askCorrectName(); } }
+            ]);
+        }
+
+        async function askCorrectName() {
+            await botSay('Sem problemas. Por favor, digite seu nome completo:');
+            enableInput('text');
+            state.step = 'nome_correcao';
+        }
+
+        async function askBirthDate() {
+            await botSay('Agora, digite sua data de nascimento (DD/MM/AAAA):');
+            enableInput('date');
+            state.step = 'data_nasc';
+        }
+
+        async function askMotherName() {
+            await botSay('Qual é o nome completo da sua mãe? (Necessário para validação de segurança)');
+            enableInput('text');
+            state.step = 'nome_mae';
+        }
+
+        async function askEmail() {
+            await botSay('Qual é o seu e-mail?');
+            enableInput('text');
+            chatInput.placeholder = 'seu@email.com';
+            state.step = 'email';
+        }
+
+        async function askPhone() {
+            await botSay('Agora, digite o seu número de celular (com DDD):');
+            enableInput('phone');
+            state.step = 'telefone';
+        }
+
+        async function askProfession() {
+            await botSay('Qual é a sua profissão? (Digite ou selecione na lista)');
+            
+            // Adiciona o datalist ao input
+            const datalist = document.createElement('datalist');
+            datalist.id = 'listaProfissoes';
+            profissoes.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                datalist.appendChild(opt);
+            });
+            document.body.appendChild(datalist);
+            
+            chatInput.setAttribute('list', 'listaProfissoes');
+            enableInput('text');
+            chatInput.placeholder = 'Digite sua profissão...';
+            state.step = 'profissao';
+        }
+
+        async function askIncome() {
+            await botSay('Qual é a sua renda mensal aproximada?');
+            showQuickReplies([
+                { label: 'Até R$ 2.000', action: () => { state.renda = 'Até R$ 2.000'; askCompany(); } },
+                { label: 'R$ 2.001 a R$ 5.000', action: () => { state.renda = 'R$ 2.001 a R$ 5.000'; askCompany(); } },
+                { label: 'R$ 5.001 a R$ 10.000', action: () => { state.renda = 'R$ 5.001 a R$ 10.000'; askCompany(); } },
+                { label: 'Acima de R$ 10.000', action: () => { state.renda = 'Acima de R$ 10.000'; askCompany(); } }
+            ]);
+        }
+
+        async function askCompany() {
+            await botSay('Você trabalha em alguma empresa? Se sim, digite o nome. (Se não, digite "Não")');
+            enableInput('text');
+            state.step = 'empresa';
         }
 
         // ============================================================
-        // LÓGICA DE UPLOAD E BLUR DO DOCUMENTO
+        // 5. UPLOAD DE DOCUMENTO COM BLUR
         // ============================================================
-        function simulateUpload() {
-            // Simula o upload exibindo a imagem borrada
-            document.getElementById('uploadArea').style.display = 'none';
-            document.getElementById('docPreviewContainer').classList.add('active');
+        async function askDocumentPhoto() {
+            await botSay('Para segurança, precisamos que você envie uma foto do seu documento de identificação.');
+            
+            // Cria o widget de upload no chat
+            const container = document.createElement('div');
+            container.className = 'quick-replies';
+            container.id = 'uploadWidgetContainer';
+            
+            const uploadArea = document.createElement('div');
+            uploadArea.className = 'upload-widget';
+            uploadArea.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 8px;">📸</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Tirar foto ou enviar arquivo</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Frente do documento</div>
+            `;
+            
+            const previewBox = document.createElement('div');
+            previewBox.className = 'doc-preview-box';
+            previewBox.id = 'docPreviewBox';
+            previewBox.innerHTML = `
+                <img src="https://via.placeholder.com/600x400/333333/ffffff?text=DOCUMENTO" class="img-blur" id="blurredImg">
+                <div class="doc-actions">
+                    <button class="btn-edit" onclick="editDoc()">Editar</button>
+                    <button class="btn-confirm" onclick="confirmDoc()">Confirmar</button>
+                </div>
+            `;
+            
+            uploadArea.onclick = () => {
+                uploadArea.style.display = 'none';
+                previewBox.classList.add('active');
+                scrollToBottom();
+            };
+            
+            container.appendChild(uploadArea);
+            container.appendChild(previewBox);
+            chatContainer.insertBefore(container, typingIndicator);
+            scrollToBottom();
         }
 
-        function editDocument() {
-            // Volta para o estado de upload
-            document.getElementById('docPreviewContainer').classList.remove('active');
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('docConfirmedMsg').style.display = 'none';
-        }
+        // Funções globais para os botões do widget de upload
+        window.editDoc = () => {
+            document.querySelector('.upload-widget').style.display = 'block';
+            document.getElementById('docPreviewBox').classList.remove('active');
+        };
 
-        function confirmDocument() {
-            // Confirma o documento
+        window.confirmDoc = () => {
             document.getElementById('blurredImg').style.filter = 'blur(0px)'; // Remove o blur temporariamente
             setTimeout(() => {
-                // Após 1 segundo, aplica um blur mais forte e marca como confirmado
-                document.getElementById('blurredImg').style.filter = 'blur(20px)';
-                document.getElementById('docPreviewContainer').classList.remove('active');
-                document.getElementById('docConfirmedMsg').style.display = 'block';
-                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('blurredImg').style.filter = 'blur(20px)'; // Aplica blur forte
+                document.getElementById('uploadWidgetContainer').remove(); // Remove do chat
+                state.docFotoConfirmada = true;
+                userSay('Documento enviado e confirmado.');
+                botSay('Documento validado com sucesso! ✅', 400).then(() => {
+                    askCep();
+                });
             }, 800);
+        };
+
+        // ============================================================
+        // 6. ENDEREÇO, SENHA E FINALIZAÇÃO
+        // ============================================================
+        async function askCep() {
+            await botSay('Agora precisamos do seu endereço. Digite o seu CEP (somente números):');
+            enableInput('cep');
+            state.step = 'cep';
+        }
+
+        async function handleCep(cep) {
+            await botSay('Buscando endereço...');
+            const address = await fetchAddress(cep);
+            
+            if (!address) {
+                await botSay('CEP não encontrado. Por favor, digite novamente:');
+                return;
+            }
+
+            state.cep = cep;
+            state.rua = address.logradouro;
+            state.bairro = address.bairro;
+            state.cidade = address.localidade;
+            state.uf = address.uf;
+
+            await botSay(`Endereço encontrado: <strong>${address.logradouro}</strong>, ${address.bairro}, ${address.localidade} - ${address.uf}.`);
+            await botSay('Agora, digite apenas o <strong>número</strong> da sua residência:');
+            enableInput('text');
+            chatInput.placeholder = 'Ex: 123';
+            state.step = 'numero';
+        }
+
+        async function askComplement() {
+            await botSay('Deseja adicionar um complemento? (Apto, bloco, etc.) Se não, digite "Não".');
+            enableInput('text');
+            state.step = 'complemento';
+        }
+
+        async function askPassword() {
+            await botSay('Para finalizar, crie uma senha de acesso para sua conta (mínimo 8 caracteres):');
+            enableInput('password');
+            state.step = 'senha';
+        }
+
+        async function askPin() {
+            await botSay('Agora, crie um PIN de segurança de 4 dígitos:');
+            enableInput('pin');
+            state.step = 'pin';
+        }
+
+        async function askTerms() {
+            await botSay('Você aceita os Termos de Abertura de Conta e a Política de Privacidade?');
+            showQuickReplies([
+                { label: 'Sim, aceito os termos', action: () => { finishFlow(); } },
+                { label: 'Não aceito', action: () => { botSay('Para abrir a conta é necessário aceitar os termos. A operação foi cancelada.'); disableInput(); } }
+            ]);
+        }
+
+        async function finishFlow() {
+            await botSay('Tudo certo com seus dados! Estou enviando para nossa análise final de crédito e segurança...');
+            disableInput();
+            
+            // Simula análise final
+            await botSay('Verificando dados cadastrais...', 1000);
+            await botSay('Executando análise antifraude...', 1000);
+            await botSay('Aprovando cadastro...', 1000);
+            
+            // Mostra a tela de sucesso
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('inputArea').style.display = 'none';
+            
+            const nomeExibicao = state.nomeCorrigido || state.nomeReal;
+            document.getElementById('resNome').textContent = nomeExibicao;
+            document.getElementById('resConta').textContent = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9)}`;
+            document.getElementById('resTipo').textContent = state.tipoConta;
+            document.getElementById('resData').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            document.getElementById('successScreen').classList.add('active');
         }
 
         // ============================================================
-        // SIMULAÇÃO DE APROVAÇÃO E SUCESSO
+        // 7. PROCESSAMENTO DO INPUT DO USUÁRIO (STATE MACHINE)
         // ============================================================
-        function simulateApproval() {
-            const loadingText = document.getElementById('loadingText');
-            const steps = [
-                "Verificando CPF/CNPJ...",
-                "Consultando dados cadastrais...",
-                "Validando documentos e reconhecimento facial...",
-                "Executando análise antifraude...",
-                "Aprovando cadastro..."
-            ];
+        function processInput() {
+            const value = chatInput.value.trim();
+            if (!value) return;
 
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < steps.length) {
-                    loadingText.textContent = steps[i];
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    finishRegistration();
-                }
-            }, 1200);
+            userSay(value);
+            chatInput.value = '';
+            disableInput();
+
+            switch (state.step) {
+                case 'doc':
+                    handleDocument(value);
+                    break;
+                case 'nome_correcao':
+                    state.nomeCorrigido = value;
+                    askBirthDate();
+                    break;
+                case 'data_nasc':
+                    state.dataNasc = value;
+                    askMotherName();
+                    break;
+                case 'nome_mae':
+                    state.nomeMae = value;
+                    askEmail();
+                    break;
+                case 'email':
+                    state.email = value;
+                    askPhone();
+                    break;
+                case 'telefone':
+                    state.telefone = value;
+                    askProfession();
+                    break;
+                case 'profissao':
+                    state.profissao = value;
+                    chatInput.removeAttribute('list'); // Remove o datalist
+                    askIncome();
+                    break;
+                case 'empresa':
+                    state.empresa = value;
+                    askDocumentPhoto();
+                    break;
+                case 'cep':
+                    handleCep(value);
+                    break;
+                case 'numero':
+                    state.numero = value;
+                    askComplement();
+                    break;
+                case 'complemento':
+                    state.complemento = value;
+                    askPassword();
+                    break;
+                case 'senha':
+                    if (value.length < 8) {
+                        botSay('A senha deve ter no mínimo 8 caracteres. Digite novamente:');
+                        enableInput('password');
+                        return;
+                    }
+                    state.senha = value;
+                    askPin();
+                    break;
+                case 'pin':
+                    if (value.length !== 4) {
+                        botSay('O PIN deve ter exatamente 4 dígitos. Digite novamente:');
+                        enableInput('pin');
+                        return;
+                    }
+                    state.pin = value;
+                    askTerms();
+                    break;
+            }
         }
 
-        function finishRegistration() {
-            // Coleta os dados preenchidos
-            const nome = document.getElementById('nomeCompleto').value;
-            const numeroConta = Math.floor(Math.random() * 90000) + 10000; // Gera conta aleatória
-            const dataAtual = new Date().toLocaleDateString('pt-BR');
+        sendBtn.addEventListener('click', processInput);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') processInput();
+        });
 
-            // Preenche o recibo de sucesso
-            document.getElementById('resNome').textContent = nome;
-            document.getElementById('resConta').textContent = `${numeroConta}-${Math.floor(Math.random() * 9)}`;
-            document.getElementById('resTipo').textContent = accountData.tipo === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica';
-            document.getElementById('resData').textContent = dataAtual;
-
-            // Avança para a tela final
-            currentStep = 9;
-            showStep(9);
-        }
+        // ============================================================
+        // 8. INICIALIZAÇÃO
+        // ============================================================
+        window.onload = () => {
+            disableInput();
+            startChat();
+        };
     </script>
 </body>
 </html>
